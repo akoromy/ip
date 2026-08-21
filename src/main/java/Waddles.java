@@ -35,6 +35,19 @@ public class Waddles {
                     tasks[index].markAsNotDone();
                     System.out.println("OK, I've marked this task as not done yet:");
                     System.out.println("  " + tasks[index]);
+                } else if (input.startsWith("delete ") || input.equals("delete")) {
+                    int index = parseTaskIndex(input, "delete", taskCount);
+                    Task removed = tasks[index];
+
+                    for (int i = index; i < taskCount - 1; i++) {
+                        tasks[i] = tasks[i + 1];
+                    }
+                    tasks[taskCount - 1] = null;
+                    taskCount--;
+
+                    System.out.println("Noted. I've removed this task:");
+                    System.out.println("  " + removed);
+                    System.out.println("Now you have " + taskCount + " tasks in the list.");
                 } else if (input.startsWith("todo") ) {
                     String description = input.length() > 4 ? input.substring(4).trim() : "";
                     if (description.isEmpty()) {
