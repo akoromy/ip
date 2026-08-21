@@ -14,13 +14,25 @@ public class Waddles {
         Scanner scanner = new Scanner(System.in);
         String input = scanner.nextLine();
 
+        String[] tasks = new String[100];
+        int taskCount = 0;
+
         while (!input.equals("bye")) {
             System.out.println("___________________________________________________________<3");
-            System.out.println(input);
+
+            if (input.equals("list")) {
+                for (int i = 0; i < taskCount; i++) {
+                    System.out.println((i + 1) + ". " + tasks[i]);
+                }
+            } else {
+                tasks[taskCount] = input;
+                taskCount++;
+                System.out.println("added: " + input);
+            }
+
             System.out.println("___________________________________________________________<3");
             input = scanner.nextLine();
         }
-
         System.out.println("___________________________________________________________<3");
         System.out.println("Byeee! See you again soon:)");
         System.out.println("___________________________________________________________<3");
