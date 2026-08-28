@@ -1,40 +1,38 @@
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Storage {
-    private static final String FILE_PATH = "./data/waddles.txt";
+    private String filePath;
 
-    /**
-     * Saves the given tasks to the data file, creating the folder/file if needed.
-     */
-    public static void save(Task[] tasks, int taskCount) throws IOException {
-        File file = new File(FILE_PATH);
+    public Storage(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public void save(List<Task> tasks) throws IOException {
+        File file = new File(filePath);
         File parentDir = file.getParentFile();
         if (parentDir != null && !parentDir.exists()) {
             parentDir.mkdirs();
         }
 
         FileWriter writer = new FileWriter(file);
-        for (int i = 0; i < taskCount; i++) {
-            writer.write(taskToFileFormat(tasks[i]) + System.lineSeparator());
+        for (Task task : tasks) {
+            writer.write(taskToFileFormat(task) + System.lineSeparator());
         }
         writer.close();
     }
 
-    /**
-     * Loads tasks from the data file into the given array, skipping any
-     * corrupted lines. Returns the number of tasks successfully loaded.
-     * If the file doesn't exist yet, returns 0 (fresh start).
-     */
-    public static int load(Task[] tasks) {
-        File file = new File(FILE_PATH);
+    public List<Task> load() {
+        List<Task> tasks = new ArrayList<>();
+        File file = new File(filePath);
         if (!file.exists()) {
-            return 0;
+            return tasks;
         }
 
-        int count = 0;
         try {
             Scanner fileScanner = new Scanner(file);
             while (fileScanner.hasNextLine()) {
@@ -44,19 +42,17 @@ public class Storage {
                 }
                 Task task = parseLine(line);
                 if (task != null) {
-                    tasks[count] = task;
-                    count++;
+                    tasks.add(task);
                 }
             }
             fileScanner.close();
         } catch (IOException e) {
-            System.out.println("Warning: could not read saved data. Starting with an empty list.");
-            return 0;
+            return new ArrayList<>();
         }
-        return count;
+        return tasks;
     }
 
-    private static String taskToFileFormat(Task task) {
+    private String taskToFileFormat(Task task) {
         String doneFlag = task.isDone() ? "1" : "0";
         if (task instanceof Deadline) {
             Deadline d = (Deadline) task;
@@ -69,7 +65,7 @@ public class Storage {
         }
     }
 
-    private static Task parseLine(String line) {
+    private Task parseLine(String line) {
         try {
             String[] parts = line.split(" \\| ");
             String type = parts[0].trim();
@@ -95,7 +91,6 @@ public class Storage {
             }
             return task;
         } catch (Exception e) {
-            // Corrupted line (wrong format, missing fields, etc.) — skip it.
             return null;
         }
     }
