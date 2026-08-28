@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Waddles {
@@ -12,7 +13,7 @@ public class Waddles {
         System.out.println("___________________________________________________________<3");
 
         Task[] tasks = new Task[100];
-        int taskCount = 0;
+        int taskCount = Storage.load(tasks);
 
         Scanner scanner = new Scanner(System.in);
         String input = scanner.nextLine();
@@ -30,11 +31,13 @@ public class Waddles {
                     tasks[index].markAsDone();
                     System.out.println("Nice! I've marked this task as done:");
                     System.out.println("  " + tasks[index]);
+                    saveTasks(tasks, taskCount);
                 } else if (input.startsWith("unmark ") || input.equals("unmark")) {
                     int index = parseTaskIndex(input, "unmark", taskCount);
                     tasks[index].markAsNotDone();
                     System.out.println("OK, I've marked this task as not done yet:");
                     System.out.println("  " + tasks[index]);
+                    saveTasks(tasks, taskCount);
                 } else if (input.startsWith("delete ") || input.equals("delete")) {
                     int index = parseTaskIndex(input, "delete", taskCount);
                     Task removed = tasks[index];
@@ -48,7 +51,8 @@ public class Waddles {
                     System.out.println("Noted. I've removed this task:");
                     System.out.println("  " + removed);
                     System.out.println("Now you have " + taskCount + " tasks in the list.");
-                } else if (input.startsWith("todo") ) {
+                    saveTasks(tasks, taskCount);
+                } else if (input.startsWith("todo")) {
                     String description = input.length() > 4 ? input.substring(4).trim() : "";
                     if (description.isEmpty()) {
                         throw new WaddlesException("OOPS!!! The description of a todo cannot be empty.");
@@ -58,6 +62,7 @@ public class Waddles {
                     System.out.println("Got it. I've added this task:");
                     System.out.println("  " + tasks[taskCount - 1]);
                     System.out.println("Now you have " + taskCount + " tasks in the list.");
+                    saveTasks(tasks, taskCount);
                 } else if (input.startsWith("deadline")) {
                     String rest = input.length() > 8 ? input.substring(8).trim() : "";
                     if (!rest.contains(" /by ")) {
@@ -77,6 +82,7 @@ public class Waddles {
                     System.out.println("Got it. I've added this task:");
                     System.out.println("  " + tasks[taskCount - 1]);
                     System.out.println("Now you have " + taskCount + " tasks in the list.");
+                    saveTasks(tasks, taskCount);
                 } else if (input.startsWith("event")) {
                     String rest = input.length() > 5 ? input.substring(5).trim() : "";
                     if (!rest.contains(" /from ") || !rest.contains(" /to ")) {
@@ -98,6 +104,7 @@ public class Waddles {
                     System.out.println("Got it. I've added this task:");
                     System.out.println("  " + tasks[taskCount - 1]);
                     System.out.println("Now you have " + taskCount + " tasks in the list.");
+                    saveTasks(tasks, taskCount);
                 } else {
                     throw new WaddlesException("OOPS!!! I'm sorry, but I don't know what that means :-(");
                 }
@@ -127,5 +134,13 @@ public class Waddles {
             throw new WaddlesException("OOPS!!! That task number doesn't exist.");
         }
         return index;
+    }
+
+    private static void saveTasks(Task[] tasks, int taskCount) {
+        try {
+            Storage.save(tasks, taskCount);
+        } catch (IOException e) {
+            System.out.println("Warning: could not save your tasks to disk:(");
+        }
     }
 }
