@@ -4,6 +4,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ * Represents a deadline task that must be completed by a specific date.
+ * The date can optionally be given in yyyy-mm-dd format for structured
+ * parsing and display; otherwise, the original text is kept as-is.
+ */
 public class Deadline extends Task {
     private static final DateTimeFormatter OUTPUT_FORMAT = DateTimeFormatter.ofPattern("MMM d yyyy");
 

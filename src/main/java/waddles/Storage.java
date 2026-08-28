@@ -7,13 +7,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Deals with loading tasks from, and saving tasks to, the hard disk.
+ */
 public class Storage {
     private String filePath;
 
+    /**
+     * Creates a Storage that reads from and writes to the given file path.
+     *
+     * @param filePath Relative path to the data file, e.g. "./data/waddles.txt".
+     */
     public Storage(String filePath) {
         this.filePath = filePath;
     }
 
+    /**
+     * Saves the given tasks to the data file, creating the containing
+     * folder if it does not already exist.
+     *
+     * @param tasks The tasks to save.
+     * @throws IOException If the file cannot be written to.
+     */
     public void save(List<Task> tasks) throws IOException {
         File file = new File(filePath);
         File parentDir = file.getParentFile();
@@ -28,6 +43,12 @@ public class Storage {
         writer.close();
     }
 
+    /**
+     * Loads tasks from the data file, skipping any corrupted lines.
+     *
+     * @return The list of tasks loaded, or an empty list if the file
+     *         does not exist or cannot be read.
+     */
     public List<Task> load() {
         List<Task> tasks = new ArrayList<>();
         File file = new File(filePath);
@@ -54,6 +75,12 @@ public class Storage {
         return tasks;
     }
 
+    /**
+     * Converts a task into its on-disk text representation.
+     *
+     * @param task The task to convert.
+     * @return The task formatted as a single line of text.
+     */
     private String taskToFileFormat(Task task) {
         String doneFlag = task.isDone() ? "1" : "0";
         if (task instanceof Deadline) {
@@ -67,6 +94,12 @@ public class Storage {
         }
     }
 
+    /**
+     * Attempts to parse a single line of the data file back into a Task.
+     *
+     * @param line A line read from the data file.
+     * @return The parsed task, or null if the line is corrupted/invalid.
+     */
     private Task parseLine(String line) {
         try {
             String[] parts = line.split(" \\| ");
