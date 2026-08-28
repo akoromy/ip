@@ -7,11 +7,11 @@ public class TaskList {
     private List<Task> tasks;
 
     public TaskList() {
-        this.tasks = new ArrayList<>();
+        tasks = new ArrayList<>();
     }
 
     public TaskList(List<Task> loadedTasks) {
-        this.tasks = loadedTasks;
+        tasks = loadedTasks;
     }
 
     public void add(Task task) {

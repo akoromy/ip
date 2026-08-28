@@ -1,5 +1,7 @@
 package waddles;
 
+import java.io.IOException;
+
 public class Waddles {
     private Storage storage;
     private TaskList tasks;
@@ -70,7 +72,7 @@ public class Waddles {
     private void saveTasks() {
         try {
             storage.save(tasks.getAll());
-        } catch (java.io.IOException e) {
+        } catch (IOException e) {
             ui.showSavingError();
         }
     }
