@@ -1,3 +1,5 @@
+package waddles;
+
 public class Waddles {
     private Storage storage;
     private TaskList tasks;

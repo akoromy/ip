@@ -1,3 +1,5 @@
+package waddles;
+
 import java.util.Scanner;
 
 public class Ui {
@@ -13,7 +15,7 @@ public class Ui {
                 + "( \")_(\")  WADDLES";
         showLine();
         System.out.println(logo);
-        System.out.println("Hello! I'm Waddles.");
+        System.out.println("Hello! I'm waddles.Waddles.");
         System.out.println("How can I help you today?");
         showLine();
     }

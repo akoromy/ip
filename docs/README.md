@@ -1,4 +1,4 @@
-# Waddles User Guide
+# waddles.Waddles User Guide
 
 // Update the title above to match the actual product name
 

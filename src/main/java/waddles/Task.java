@@ -1,3 +1,5 @@
+package waddles;
+
 public class Task {
     private String description;
     private boolean isDone;
