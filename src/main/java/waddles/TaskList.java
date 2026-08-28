@@ -13,7 +13,7 @@ public class TaskList {
      * Creates an empty TaskList.
      */
     public TaskList() {
-        this.tasks = new ArrayList<>();
+        tasks = new ArrayList<>();
     }
 
     /**
@@ -22,7 +22,7 @@ public class TaskList {
      * @param loadedTasks The tasks to populate the list with.
      */
     public TaskList(List<Task> loadedTasks) {
-        this.tasks = loadedTasks;
+        tasks = loadedTasks;
     }
 
     /**

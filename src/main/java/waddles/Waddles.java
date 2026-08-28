@@ -1,9 +1,12 @@
 package waddles;
 
+import java.io.IOException;
+
 /**
  * Entry point for the Waddles chatbot. Coordinates the Ui, Storage,
  * and TaskList to run the main command loop.
  */
+
 public class Waddles {
     private Storage storage;
     private TaskList tasks;
@@ -88,7 +91,7 @@ public class Waddles {
     private void saveTasks() {
         try {
             storage.save(tasks.getAll());
-        } catch (java.io.IOException e) {
+        } catch (IOException e) {
             ui.showSavingError();
         }
     }
