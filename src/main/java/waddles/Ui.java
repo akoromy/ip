@@ -1,5 +1,6 @@
 package waddles;
 
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -13,6 +14,22 @@ public class Ui {
         scanner = new Scanner(System.in);
     }
 
+  /**
+     * Displays the tasks that matched a find/search command.
+     *
+     * @param matches The matching tasks to display.
+     */
+    public void showFoundTasks(List<Task> matches) {
+        if (matches.isEmpty()) {
+            System.out.println("No matching tasks found.");
+            return;
+        }
+        System.out.println("Here are the matching tasks in your list:");
+        for (int i = 0; i < matches.size(); i++) {
+            System.out.println((i + 1) + "." + matches.get(i));
+        }
+    }
+
     /**
      * Displays the welcome banner and greeting shown at startup.
      */
@@ -22,7 +39,7 @@ public class Ui {
                 + "( \")_(\")  WADDLES";
         showLine();
         System.out.println(logo);
-        System.out.println("Hello! I'm waddles.Waddles.");
+        System.out.println("Hello! I'm Waddles.");
         System.out.println("How can I help you today?");
         showLine();
     }
