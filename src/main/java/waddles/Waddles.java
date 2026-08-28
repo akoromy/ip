@@ -23,6 +23,9 @@ public class Waddles {
 
                 if (command.equals("list")) {
                     ui.showTaskList(tasks);
+                } else if (command.equals("find")) {
+                    String keyword = Parser.parseFind(input);
+                    ui.showFoundTasks(tasks.find(keyword));
                 } else if (command.equals("mark")) {
                     int index = Parser.parseTaskIndex(input, "mark", tasks.size());
                     tasks.get(index).markAsDone();

@@ -60,4 +60,19 @@ public class Parser {
         }
         return new Event(description, from, to);
     }
+
+    /**
+     * Parses a "find" command into the keyword to search for.
+     *
+     * @param input The full line of user input.
+     * @return The keyword to search for.
+     * @throws WaddlesException If the keyword is empty.
+     */
+    public static String parseFind(String input) throws WaddlesException {
+        String keyword = input.length() > 4 ? input.substring(4).trim() : "";
+        if (keyword.isEmpty()) {
+            throw new WaddlesException("OOPS!!! Please provide a keyword to search for, e.g. find book");
+        }
+        return keyword;
+    }
 }
