@@ -9,6 +9,10 @@ java {
     targetCompatibility = JavaVersion.VERSION_25
 }
 
+// No org.openjfx dependencies are declared: this project is built and run with the
+// "25.0.3.fx-zulu" JDK distribution (see AGENTS.md), which bundles the JavaFX modules
+// directly in the JDK, so they're available without adding them as Gradle dependencies.
+
 repositories {
     mavenCentral()
 }
@@ -37,7 +41,10 @@ test {
 }
 
 application {
-    mainClass = 'waddles.Waddles'
+    // Launcher (not Main) is the entry point: Main extends javafx.application.Application,
+    // and launching that class directly can trip up JavaFX's classpath scanning, especially
+    // from a shaded jar. Launcher just calls Application.launch(Main.class, ...) instead.
+    mainClass = 'waddles.Launcher'
 }
 
 jar {
