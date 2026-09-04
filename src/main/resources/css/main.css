@@ -1,0 +1,62 @@
+.root-pane {
+    -fx-background-color: #FFF8F0;
+    -fx-font-family: "Comic Sans MS", "Segoe UI", "SansSerif";
+}
+.conversation, .conversation > .viewport {
+    -fx-background-color: #FFF8F0;
+}
+.dialog-container {
+    -fx-background-color: #FFF8F0;
+    -fx-padding: 12;
+}
+.dialog-box {
+    -fx-spacing: 10;
+}
+.dialog-label {
+    -fx-background-radius: 18;
+    -fx-padding: 12 16;
+    -fx-font-size: 13px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 6, 0.1, 0, 2);
+}
+.waddles-dialog .dialog-label {
+    -fx-background-color: #FFD9C7;
+    -fx-text-fill: #5A3825;
+}
+.user-dialog .dialog-label {
+    -fx-background-color: #F4C572;
+    -fx-text-fill: #4A3010;
+}
+.avatar {
+    -fx-background-color: #F4A950;
+    -fx-background-radius: 50%;
+    -fx-border-color: #E08A2E;
+    -fx-border-width: 2;
+    -fx-border-radius: 50%;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 5, 0.1, 0, 1);
+}
+.command-input {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 20;
+    -fx-border-color: #F4C572;
+    -fx-border-radius: 20;
+    -fx-border-width: 1.5;
+    -fx-padding: 0 16;
+    -fx-pref-height: 42;
+    -fx-font-size: 13px;
+    -fx-prompt-text-fill: #C9A98A;
+}
+.send-button {
+    -fx-background-color: #F4A950;
+    -fx-background-radius: 20;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-pref-height: 42;
+    -fx-cursor: hand;
+}
+.send-button:hover {
+    -fx-background-color: #E08A2E;
+}
+.send-button:pressed {
+    -fx-background-color: #C9761F;
+}
