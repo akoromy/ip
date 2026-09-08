@@ -85,13 +85,25 @@ public class Storage {
         String doneFlag = task.isDone() ? "1" : "0";
         if (task instanceof Deadline) {
             Deadline d = (Deadline) task;
-            return "D | " + doneFlag + " | " + task.getDescription() + " | " + d.getBy();
+            return joinFields("D", doneFlag, task.getDescription(), d.getBy());
         } else if (task instanceof Event) {
             Event e = (Event) task;
-            return "E | " + doneFlag + " | " + task.getDescription() + " | " + e.getFrom() + " | " + e.getTo();
+            return joinFields("E", doneFlag, task.getDescription(), e.getFrom(), e.getTo());
         } else {
-            return "T | " + doneFlag + " | " + task.getDescription();
+            return joinFields("T", doneFlag, task.getDescription());
         }
+    }
+
+    /**
+     * Joins the given fields into a single line using this file format's
+     * " | " delimiter. Declared with varargs since each task type has a
+     * different number of fields (a ToDo has 3, a Deadline 4, an Event 5).
+     *
+     * @param fields The fields to join, in the order they should appear.
+     * @return The fields joined into one delimited line.
+     */
+    private static String joinFields(String... fields) {
+        return String.join(" | ", fields);
     }
 
     /**
