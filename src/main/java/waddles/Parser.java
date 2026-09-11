@@ -4,6 +4,10 @@ package waddles;
  * Deals with making sense of the user's raw command input.
  */
 public class Parser {
+    private static final int TODO_PREFIX_LENGTH = "todo".length();
+    private static final int DEADLINE_PREFIX_LENGTH = "deadline".length();
+    private static final int EVENT_PREFIX_LENGTH = "event".length();
+    private static final int FIND_PREFIX_LENGTH = "find".length();
 
     /**
      * Extracts the command word (the first word) from the user's input.
@@ -47,7 +51,7 @@ public class Parser {
      * @throws WaddlesException If the description is empty.
      */
     public static Task parseTodo(String input) throws WaddlesException {
-        String description = input.length() > 4 ? input.substring(4).trim() : "";
+        String description = input.length() > TODO_PREFIX_LENGTH ? input.substring(TODO_PREFIX_LENGTH).trim() : "";
         if (description.isEmpty()) {
             throw new WaddlesException("OOPS!!! The description of a todo cannot be empty.");
         }
@@ -62,7 +66,8 @@ public class Parser {
      * @throws WaddlesException If the description or /by date is missing.
      */
     public static Task parseDeadline(String input) throws WaddlesException {
-        String rest = input.length() > 8 ? input.substring(8).trim() : "";
+        String rest = input.length() > DEADLINE_PREFIX_LENGTH
+                ? input.substring(DEADLINE_PREFIX_LENGTH).trim() : "";
         if (!rest.contains(" /by ")) {
             throw new WaddlesException(
                     "OOPS!!! A deadline needs a description and a /by date, "
@@ -85,7 +90,7 @@ public class Parser {
      * @throws WaddlesException If the description, /from, or /to is missing.
      */
     public static Task parseEvent(String input) throws WaddlesException {
-        String rest = input.length() > 5 ? input.substring(5).trim() : "";
+        String rest = input.length() > EVENT_PREFIX_LENGTH ? input.substring(EVENT_PREFIX_LENGTH).trim() : "";
         if (!rest.contains(" /from ") || !rest.contains(" /to ")) {
             throw new WaddlesException(
                     "OOPS!!! An event needs a description, a /from time, and a /to time, "
@@ -110,7 +115,7 @@ public class Parser {
      * @throws WaddlesException If the keyword is empty.
      */
     public static String parseFind(String input) throws WaddlesException {
-        String keyword = input.length() > 4 ? input.substring(4).trim() : "";
+        String keyword = input.length() > FIND_PREFIX_LENGTH ? input.substring(FIND_PREFIX_LENGTH).trim() : "";
         if (keyword.isEmpty()) {
             throw new WaddlesException("OOPS!!! Please provide a keyword to search for, e.g. find book");
         }
