@@ -27,6 +27,10 @@ public class Event extends Task {
      */
     public Event(String description, String from, String to) {
         super(description);
+        assert from != null && !from.isEmpty() : "Event 'from' text should never be null/empty; "
+                + "callers must validate user input before constructing an Event";
+        assert to != null && !to.isEmpty() : "Event 'to' text should never be null/empty; "
+                + "callers must validate user input before constructing an Event";
         this.from = from;
         this.to = to;
         this.fromDate = parseDate(from);
