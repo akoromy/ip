@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 /**
  * Deals with loading tasks from, and saving tasks to, the hard disk.
@@ -36,10 +37,14 @@ public class Storage {
             parentDir.mkdirs();
         }
 
+        // Only append a trailing line separator when there is at least one task, so that
+        // saving an empty list still produces a genuinely empty file, as it did before.
+        String content = tasks.isEmpty() ? "" : tasks.stream()
+                .map(this::taskToFileFormat)
+                .collect(Collectors.joining(System.lineSeparator(), "", System.lineSeparator()));
+
         try (FileWriter writer = new FileWriter(file)) {
-            for (Task task : tasks) {
-                writer.write(taskToFileFormat(task) + System.lineSeparator());
-            }
+            writer.write(content);
         }
     }
 
