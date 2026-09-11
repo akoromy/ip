@@ -90,8 +90,17 @@ public class Waddles {
             case "mark": {
                 int index = Parser.parseTaskIndex(input, "mark", tasks.size());
                 saveUndoSnapshot();
-                tasks.get(index).markAsDone();
-                String message = ui.formatMarked(tasks.get(index));
+                Task task = tasks.get(index);
+                String message;
+                if (task.isRecurring()) {
+                    // Completing an occurrence of a recurring task books the next one,
+                    // rather than leaving it marked done forever.
+                    task.recur();
+                    message = ui.formatRecurred(task);
+                } else {
+                    task.markAsDone();
+                    message = ui.formatMarked(task);
+                }
                 saveTasks();
                 return message;
             }
