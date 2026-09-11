@@ -11,7 +11,7 @@ import java.util.Scanner;
  * Deals with loading tasks from, and saving tasks to, the hard disk.
  */
 public class Storage {
-    private String filePath;
+    private final String filePath;
 
     /**
      * Creates a Storage that reads from and writes to the given file path.

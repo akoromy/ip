@@ -12,8 +12,8 @@ import java.time.format.DateTimeParseException;
 public class Deadline extends Task {
     private static final DateTimeFormatter OUTPUT_FORMAT = DateTimeFormatter.ofPattern("MMM d yyyy");
 
-    private String by;
-    private LocalDate byDate;
+    private final String by;
+    private final LocalDate byDate;
 
     public Deadline(String description, String by) {
         super(description);

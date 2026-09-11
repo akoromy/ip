@@ -5,7 +5,7 @@ package waddles;
  * Serves as the base class for more specific task types.
  */
 public class Task {
-    private String description;
+    private final String description;
     private boolean isDone;
 
     /**
