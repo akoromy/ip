@@ -64,38 +64,42 @@ public class Waddles {
         try {
             String command = Parser.getCommandWord(input);
 
-            if (command.equals("bye")) {
+            switch (command) {
+            case "bye":
                 return ui.formatGoodbyeMessage();
-            } else if (command.equals("list")) {
+            case "list":
                 return ui.formatTaskList(tasks);
-            } else if (command.equals("find")) {
+            case "find":
                 String keyword = Parser.parseFind(input);
                 return ui.formatFoundTasks(tasks.find(keyword));
-            } else if (command.equals("mark")) {
+            case "mark": {
                 int index = Parser.parseTaskIndex(input, "mark", tasks.size());
                 tasks.get(index).markAsDone();
                 String message = ui.formatMarked(tasks.get(index));
                 saveTasks();
                 return message;
-            } else if (command.equals("unmark")) {
+            }
+            case "unmark": {
                 int index = Parser.parseTaskIndex(input, "unmark", tasks.size());
                 tasks.get(index).markAsNotDone();
                 String message = ui.formatUnmarked(tasks.get(index));
                 saveTasks();
                 return message;
-            } else if (command.equals("delete")) {
+            }
+            case "delete": {
                 int index = Parser.parseTaskIndex(input, "delete", tasks.size());
                 Task removed = tasks.delete(index);
                 String message = ui.formatDeleted(removed, tasks.size());
                 saveTasks();
                 return message;
-            } else if (command.equals("todo")) {
+            }
+            case "todo":
                 return addTaskAndRespond(Parser.parseTodo(input));
-            } else if (command.equals("deadline")) {
+            case "deadline":
                 return addTaskAndRespond(Parser.parseDeadline(input));
-            } else if (command.equals("event")) {
+            case "event":
                 return addTaskAndRespond(Parser.parseEvent(input));
-            } else {
+            default:
                 throw new WaddlesException("OOPS!!! I'm sorry, but I don't know what that means :-(");
             }
         } catch (WaddlesException e) {
