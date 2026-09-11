@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.Test;
 
 public class ParserTest {
@@ -43,6 +45,28 @@ public class ParserTest {
     public void parseDeadline_emptyDescriptionOrDate_exceptionThrown() {
         assertThrows(WaddlesException.class, () -> Parser.parseDeadline("deadline /by 2019-12-01"));
         assertThrows(WaddlesException.class, () -> Parser.parseDeadline("deadline return book /by "));
+    }
+
+    @Test
+    public void parseSchedule_validDate_returnsThatDate() throws WaddlesException {
+        LocalDate date = Parser.parseSchedule("schedule 2024-12-01");
+        assertEquals(LocalDate.of(2024, 12, 1), date);
+    }
+
+    @Test
+    public void parseSchedule_today_returnsCurrentDate() throws WaddlesException {
+        assertEquals(LocalDate.now(), Parser.parseSchedule("schedule today"));
+    }
+
+    @Test
+    public void parseSchedule_missingDate_exceptionThrown() {
+        assertThrows(WaddlesException.class, () -> Parser.parseSchedule("schedule"));
+        assertThrows(WaddlesException.class, () -> Parser.parseSchedule("schedule   "));
+    }
+
+    @Test
+    public void parseSchedule_invalidDateFormat_exceptionThrown() {
+        assertThrows(WaddlesException.class, () -> Parser.parseSchedule("schedule next monday"));
     }
 
     @Test

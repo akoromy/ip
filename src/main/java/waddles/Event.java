@@ -56,6 +56,11 @@ public class Event extends Task {
     }
 
     @Override
+    public boolean occursOn(LocalDate date) {
+        return fromDate != null && toDate != null && !date.isBefore(fromDate) && !date.isAfter(toDate);
+    }
+
+    @Override
     public String toString() {
         String displayFrom = (fromDate != null) ? fromDate.format(OUTPUT_FORMAT) : from;
         String displayTo = (toDate != null) ? toDate.format(OUTPUT_FORMAT) : to;

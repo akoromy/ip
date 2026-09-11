@@ -1,5 +1,8 @@
 package waddles;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+
 /**
  * Deals with making sense of the user's raw command input.
  */
@@ -115,5 +118,29 @@ public class Parser {
             throw new WaddlesException("OOPS!!! Please provide a keyword to search for, e.g. find book");
         }
         return keyword;
+    }
+
+    /**
+     * Parses a "schedule" command into the date whose schedule should be shown.
+     *
+     * @param input The full line of user input.
+     * @return The date to view the schedule for.
+     * @throws WaddlesException If no date is given, or it isn't "today" or a valid yyyy-mm-dd date.
+     */
+    public static LocalDate parseSchedule(String input) throws WaddlesException {
+        String text = input.length() > 8 ? input.substring(8).trim() : "";
+        if (text.isEmpty()) {
+            throw new WaddlesException(
+                    "OOPS!!! Please provide a date, e.g. schedule 2024-12-01 or schedule today");
+        }
+        if (text.equalsIgnoreCase("today")) {
+            return LocalDate.now();
+        }
+        try {
+            return LocalDate.parse(text);
+        } catch (DateTimeParseException e) {
+            throw new WaddlesException(
+                    "OOPS!!! Please give the date as yyyy-mm-dd (e.g. 2024-12-01), or use 'today'.");
+        }
     }
 }

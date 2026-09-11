@@ -1,6 +1,7 @@
 package waddles;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 /**
  * Entry point for the Waddles chatbot. Coordinates the Ui, Storage,
@@ -71,6 +72,9 @@ public class Waddles {
             } else if (command.equals("find")) {
                 String keyword = Parser.parseFind(input);
                 return ui.formatFoundTasks(tasks.find(keyword));
+            } else if (command.equals("schedule")) {
+                LocalDate date = Parser.parseSchedule(input);
+                return ui.formatSchedule(date, tasks.findOnDate(date));
             } else if (command.equals("mark")) {
                 int index = Parser.parseTaskIndex(input, "mark", tasks.size());
                 tasks.get(index).markAsDone();
