@@ -1,5 +1,7 @@
 package waddles;
 
+import java.time.LocalDate;
+
 /**
  * Represents a task with a description and a done/not-done status.
  * Serves as the base class for more specific task types.
@@ -49,6 +51,18 @@ public class Task {
 
     public String getDescription() {
         return description;
+    }
+
+    /**
+     * Returns whether this task falls on the given date, for the "schedule"
+     * command. A plain Task has no date, so this is always false;
+     * {@link Deadline} and {@link Event} override it.
+     *
+     * @param date The date to check against.
+     * @return True if this task is scheduled on that date.
+     */
+    public boolean occursOn(LocalDate date) {
+        return false;
     }
 
     /**

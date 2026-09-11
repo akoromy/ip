@@ -83,6 +83,11 @@ public class Deadline extends Task {
     }
 
     @Override
+    public boolean occursOn(LocalDate date) {
+        return byDate != null && byDate.equals(date);
+    }
+
+    @Override
     public String toString() {
         String displayBy = (byDate != null) ? byDate.format(OUTPUT_FORMAT) : by;
         String recurrenceSuffix = isRecurring() ? " (every " + recurrence.displayLabel() + ")" : "";
