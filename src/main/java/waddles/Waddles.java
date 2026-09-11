@@ -90,29 +90,32 @@ public class Waddles {
                 saveTasks();
                 return message;
             } else if (command.equals("todo")) {
-                Task task = Parser.parseTodo(input);
-                tasks.add(task);
-                String message = ui.formatAdded(task, tasks.size());
-                saveTasks();
-                return message;
+                return addTaskAndRespond(Parser.parseTodo(input));
             } else if (command.equals("deadline")) {
-                Task task = Parser.parseDeadline(input);
-                tasks.add(task);
-                String message = ui.formatAdded(task, tasks.size());
-                saveTasks();
-                return message;
+                return addTaskAndRespond(Parser.parseDeadline(input));
             } else if (command.equals("event")) {
-                Task task = Parser.parseEvent(input);
-                tasks.add(task);
-                String message = ui.formatAdded(task, tasks.size());
-                saveTasks();
-                return message;
+                return addTaskAndRespond(Parser.parseEvent(input));
             } else {
                 throw new WaddlesException("OOPS!!! I'm sorry, but I don't know what that means :-(");
             }
         } catch (WaddlesException e) {
             return e.getMessage();
         }
+    }
+
+    /**
+     * Adds a task to the list, persists the change, and builds the
+     * confirmation message shown to the user. Shared by the todo, deadline,
+     * and event commands, which differ only in how the task is parsed.
+     *
+     * @param task The task to add.
+     * @return The confirmation message to show the user.
+     */
+    private String addTaskAndRespond(Task task) {
+        tasks.add(task);
+        String message = ui.formatAdded(task, tasks.size());
+        saveTasks();
+        return message;
     }
 
     /**
