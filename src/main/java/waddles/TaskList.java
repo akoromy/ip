@@ -22,6 +22,8 @@ public class TaskList {
      * @param loadedTasks The tasks to populate the list with.
      */
     public TaskList(List<Task> loadedTasks) {
+        assert loadedTasks != null : "loadedTasks should never be null; Storage#load always returns "
+                + "an empty list rather than null, even when the data file is missing or corrupted";
         tasks = loadedTasks;
     }
 
@@ -31,6 +33,7 @@ public class TaskList {
      * @param task The task to add.
      */
     public void add(Task task) {
+        assert task != null : "Cannot add a null task to the list";
         tasks.add(task);
     }
 
@@ -74,6 +77,8 @@ public class TaskList {
      * @return The list of matching tasks, in original order.
      */
     public List<Task> find(String keyword) {
+        assert keyword != null : "Search keyword should never be null; "
+                + "Parser#parseFind rejects empty input but always returns a non-null keyword";
         List<Task> matches = new ArrayList<>();
         String lowerKeyword = keyword.toLowerCase();
         for (Task task : tasks) {
