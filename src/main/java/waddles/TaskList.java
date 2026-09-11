@@ -1,5 +1,6 @@
 package waddles;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -84,5 +85,24 @@ public class TaskList {
         return tasks.stream()
                 .filter(task -> task.getDescription().toLowerCase().contains(lowerKeyword))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Returns the tasks scheduled to occur on the given date, for the
+     * "schedule" command. A ToDo never matches, since it has no date; a
+     * Deadline matches its own date, and an Event matches any date within
+     * its (inclusive) span.
+     *
+     * @param date The date to view the schedule for.
+     * @return The matching tasks, in original order.
+     */
+    public List<Task> findOnDate(LocalDate date) {
+        List<Task> matches = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task.occursOn(date)) {
+                matches.add(task);
+            }
+        }
+        return matches;
     }
 }

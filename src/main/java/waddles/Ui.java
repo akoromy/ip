@@ -1,5 +1,7 @@
 package waddles;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -16,6 +18,8 @@ import java.util.stream.IntStream;
  * both interfaces without duplicating it.
  */
 public class Ui {
+    private static final DateTimeFormatter SCHEDULE_DATE_FORMAT = DateTimeFormatter.ofPattern("MMM d yyyy");
+
     private final Scanner scanner;
 
     public Ui() {
@@ -209,6 +213,25 @@ public class Ui {
      */
     public String formatDeleted(Task task, int size) {
         return "Noted. I've removed this task:\n  " + task + "\nNow you have " + size + " tasks in the list.";
+    }
+
+    /**
+     * Formats the tasks scheduled on a given date, for the "schedule" command.
+     *
+     * @param date The date the schedule was requested for.
+     * @param tasksOnDate The tasks occurring on that date, in original order.
+     * @return The formatted message.
+     */
+    public String formatSchedule(LocalDate date, List<Task> tasksOnDate) {
+        String header = "Here's your schedule for " + date.format(SCHEDULE_DATE_FORMAT) + ":";
+        if (tasksOnDate.isEmpty()) {
+            return header + "\nNothing scheduled that day. Enjoy the free time!";
+        }
+        StringBuilder sb = new StringBuilder(header);
+        for (int i = 0; i < tasksOnDate.size(); i++) {
+            sb.append("\n").append(i + 1).append(".").append(tasksOnDate.get(i));
+        }
+        return sb.toString();
     }
 
     /**

@@ -2,6 +2,9 @@ package waddles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
 
@@ -51,5 +54,31 @@ public class TaskListTest {
     public void size_emptyList_returnsZero() {
         TaskList taskList = new TaskList();
         assertEquals(0, taskList.size());
+    }
+
+    @Test
+    public void findOnDate_deadlineOnThatDate_isIncluded() {
+        TaskList taskList = new TaskList();
+        taskList.add(new Deadline("submit report", "2024-12-01"));
+
+        assertEquals(1, taskList.findOnDate(LocalDate.of(2024, 12, 1)).size());
+        assertTrue(taskList.findOnDate(LocalDate.of(2024, 12, 2)).isEmpty());
+    }
+
+    @Test
+    public void findOnDate_eventSpanningThatDate_isIncluded() {
+        TaskList taskList = new TaskList();
+        taskList.add(new Event("conference", "2024-12-01", "2024-12-03"));
+
+        assertEquals(1, taskList.findOnDate(LocalDate.of(2024, 12, 2)).size());
+        assertTrue(taskList.findOnDate(LocalDate.of(2024, 12, 4)).isEmpty());
+    }
+
+    @Test
+    public void findOnDate_todo_neverIncluded() {
+        TaskList taskList = new TaskList();
+        taskList.add(new ToDo("read book"));
+
+        assertTrue(taskList.findOnDate(LocalDate.now()).isEmpty());
     }
 }

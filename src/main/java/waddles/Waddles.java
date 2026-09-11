@@ -1,6 +1,7 @@
 package waddles;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,6 +88,9 @@ public class Waddles {
                 return ui.formatFoundTasks(tasks.find(keyword));
             case "undo":
                 return undoLastCommand();
+            case "schedule":
+                LocalDate date = Parser.parseSchedule(input);
+                return ui.formatSchedule(date, tasks.findOnDate(date));
             case "mark": {
                 int index = Parser.parseTaskIndex(input, "mark", tasks.size());
                 saveUndoSnapshot();
