@@ -35,7 +35,12 @@ public class DialogBox extends HBox {
             fxmlLoader.setRoot(this);
             fxmlLoader.load();
         } catch (IOException e) {
-            e.printStackTrace();
+            // The FXML layout is a bundled resource, not user input, so failing to load it
+            // is a packaging bug rather than something the app can recover from at runtime.
+            // Swallowing it here (as the original code did with e.printStackTrace()) would
+            // leave `dialog`/`avatar` unset and continue with a half-built dialog box instead
+            // of surfacing the real problem.
+            throw new IllegalStateException("Failed to load DialogBox.fxml", e);
         }
 
         dialog.setText(text);
