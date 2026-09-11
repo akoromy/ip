@@ -2,6 +2,7 @@ package waddles;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Contains the task list and operations to add, delete, and retrieve tasks.
@@ -68,13 +69,9 @@ public class TaskList {
     public List<Task> find(String keyword) {
         assert keyword != null : "Search keyword should never be null; "
                 + "Parser#parseFind rejects empty input but always returns a non-null keyword";
-        List<Task> matches = new ArrayList<>();
         String lowerKeyword = keyword.toLowerCase();
-        for (Task task : tasks) {
-            if (task.getDescription().toLowerCase().contains(lowerKeyword)) {
-                matches.add(task);
-            }
-        }
-        return matches;
+        return tasks.stream()
+                .filter(task -> task.getDescription().toLowerCase().contains(lowerKeyword))
+                .collect(Collectors.toList());
     }
 }
