@@ -13,10 +13,12 @@ import java.time.format.DateTimeParseException;
 public class Event extends Task {
     private static final DateTimeFormatter OUTPUT_FORMAT = DateTimeFormatter.ofPattern("MMM d yyyy");
 
-    private final String from;
-    private final String to;
-    private final LocalDate fromDate;
-    private final LocalDate toDate;
+    // Not final: recur() advances from/to/fromDate/toDate in place to the next occurrence.
+    private String from;
+    private String to;
+    private LocalDate fromDate;
+    private LocalDate toDate;
+    private Recurrence recurrence = Recurrence.NONE;
 
     /**
      * Creates an Event task with the given description and time span.
@@ -59,6 +61,47 @@ public class Event extends Task {
         return this.to;
     }
 
+    /**
+     * Returns whether both this event's dates were understood as structured
+     * yyyy-mm-dd dates, which is required for recurrence to be able to
+     * compute a next occurrence.
+     *
+     * @return True if both dates were parsed successfully.
+     */
+    public boolean hasStructuredDate() {
+        return fromDate != null && toDate != null;
+    }
+
+    /**
+     * Sets how often this event repeats.
+     *
+     * @param recurrence The recurrence period; use {@link Recurrence#NONE} for a one-off event.
+     */
+    public void setRecurrence(Recurrence recurrence) {
+        this.recurrence = recurrence;
+    }
+
+    public Recurrence getRecurrence() {
+        return recurrence;
+    }
+
+    @Override
+    public boolean isRecurring() {
+        return recurrence != Recurrence.NONE;
+    }
+
+    @Override
+    public void recur() {
+        if (!isRecurring()) {
+            throw new UnsupportedOperationException("This event does not recur");
+        }
+        fromDate = recurrence.advance(fromDate);
+        toDate = recurrence.advance(toDate);
+        from = fromDate.toString();
+        to = toDate.toString();
+        markAsNotDone();
+    }
+
     @Override
     public boolean occursOn(LocalDate date) {
         return fromDate != null && toDate != null && !date.isBefore(fromDate) && !date.isAfter(toDate);
@@ -68,6 +111,7 @@ public class Event extends Task {
     public String toString() {
         String displayFrom = (fromDate != null) ? fromDate.format(OUTPUT_FORMAT) : from;
         String displayTo = (toDate != null) ? toDate.format(OUTPUT_FORMAT) : to;
-        return "[E]" + super.toString() + " (from: " + displayFrom + " to: " + displayTo + ")";
+        String recurrenceSuffix = isRecurring() ? " (every " + recurrence.displayLabel() + ")" : "";
+        return "[E]" + super.toString() + " (from: " + displayFrom + " to: " + displayTo + ")" + recurrenceSuffix;
     }
 }

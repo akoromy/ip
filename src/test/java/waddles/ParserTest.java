@@ -70,6 +70,42 @@ public class ParserTest {
     }
 
     @Test
+    public void parseDeadline_withEveryWeek_returnsRecurringDeadline() throws WaddlesException {
+        Task task = Parser.parseDeadline("deadline pay rent /by 2024-01-01 /every week");
+
+        assertTrue(task instanceof Deadline);
+        assertTrue(task.isRecurring());
+        assertEquals(Recurrence.WEEKLY, ((Deadline) task).getRecurrence());
+    }
+
+    @Test
+    public void parseDeadline_recurringWithoutStructuredDate_exceptionThrown() {
+        assertThrows(WaddlesException.class,
+                () -> Parser.parseDeadline("deadline pay rent /by Sunday /every week"));
+    }
+
+    @Test
+    public void parseDeadline_unknownRecurrenceKeyword_exceptionThrown() {
+        assertThrows(WaddlesException.class,
+                () -> Parser.parseDeadline("deadline pay rent /by 2024-01-01 /every fortnight"));
+    }
+
+    @Test
+    public void parseEvent_withEveryDay_returnsRecurringEvent() throws WaddlesException {
+        Task task = Parser.parseEvent("event standup /from 2024-01-01 /to 2024-01-01 /every day");
+
+        assertTrue(task instanceof Event);
+        assertTrue(task.isRecurring());
+        assertEquals(Recurrence.DAILY, ((Event) task).getRecurrence());
+    }
+
+    @Test
+    public void parseEvent_recurringWithoutStructuredDates_exceptionThrown() {
+        assertThrows(WaddlesException.class,
+                () -> Parser.parseEvent("event standup /from Mon /to Tue /every day"));
+    }
+
+    @Test
     public void parseTaskIndex_validNumber_returnsZeroIndexedValue() throws WaddlesException {
         int index = Parser.parseTaskIndex("mark 2", "mark", 5);
         assertEquals(1, index);
