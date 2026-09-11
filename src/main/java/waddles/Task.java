@@ -16,6 +16,8 @@ public class Task {
      * @param description Description of the task.
      */
     public Task(String description) {
+        assert description != null : "Task description should never be null; "
+                + "callers must validate user input before constructing a Task";
         this.description = description;
         this.isDone = false;
     }

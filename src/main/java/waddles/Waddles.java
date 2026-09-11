@@ -64,6 +64,8 @@ public class Waddles {
     public String getResponse(String input) {
         try {
             String command = Parser.getCommandWord(input);
+            assert command != null : "Parser#getCommandWord splits on a fixed pattern and should "
+                    + "always return at least an empty string, never null";
 
             if (command.equals("bye")) {
                 return ui.formatGoodbyeMessage();
