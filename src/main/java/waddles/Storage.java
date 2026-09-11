@@ -135,7 +135,10 @@ public class Storage {
                 task.markAsDone();
             }
             return task;
-        } catch (Exception e) {
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // A line with fewer " | "-delimited fields than its declared type requires
+            // (e.g. a Deadline missing its "by" field) is the only failure mode expected
+            // from a corrupted data file; anything else should surface as a real bug.
             return null;
         }
     }
