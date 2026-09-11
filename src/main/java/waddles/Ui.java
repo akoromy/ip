@@ -18,7 +18,7 @@ import java.util.Scanner;
 public class Ui {
     private static final DateTimeFormatter SCHEDULE_DATE_FORMAT = DateTimeFormatter.ofPattern("MMM d yyyy");
 
-    private Scanner scanner;
+    private final Scanner scanner;
 
     public Ui() {
         scanner = new Scanner(System.in);

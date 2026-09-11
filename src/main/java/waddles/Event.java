@@ -13,10 +13,10 @@ import java.time.format.DateTimeParseException;
 public class Event extends Task {
     private static final DateTimeFormatter OUTPUT_FORMAT = DateTimeFormatter.ofPattern("MMM d yyyy");
 
-    private String from;
-    private String to;
-    private LocalDate fromDate;
-    private LocalDate toDate;
+    private final String from;
+    private final String to;
+    private final LocalDate fromDate;
+    private final LocalDate toDate;
 
     /**
      * Creates an Event task with the given description and time span.

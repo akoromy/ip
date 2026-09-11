@@ -67,58 +67,65 @@ public class Waddles {
             assert command != null : "Parser#getCommandWord splits on a fixed pattern and should "
                     + "always return at least an empty string, never null";
 
-            if (command.equals("bye")) {
+            switch (command) {
+            case "bye":
                 return ui.formatGoodbyeMessage();
-            } else if (command.equals("list")) {
+            case "list":
                 return ui.formatTaskList(tasks);
-            } else if (command.equals("find")) {
+            case "find":
                 String keyword = Parser.parseFind(input);
                 return ui.formatFoundTasks(tasks.find(keyword));
-            } else if (command.equals("schedule")) {
+            case "schedule":
                 LocalDate date = Parser.parseSchedule(input);
                 return ui.formatSchedule(date, tasks.findOnDate(date));
-            } else if (command.equals("mark")) {
+            case "mark": {
                 int index = Parser.parseTaskIndex(input, "mark", tasks.size());
                 tasks.get(index).markAsDone();
                 String message = ui.formatMarked(tasks.get(index));
                 saveTasks();
                 return message;
-            } else if (command.equals("unmark")) {
+            }
+            case "unmark": {
                 int index = Parser.parseTaskIndex(input, "unmark", tasks.size());
                 tasks.get(index).markAsNotDone();
                 String message = ui.formatUnmarked(tasks.get(index));
                 saveTasks();
                 return message;
-            } else if (command.equals("delete")) {
+            }
+            case "delete": {
                 int index = Parser.parseTaskIndex(input, "delete", tasks.size());
                 Task removed = tasks.delete(index);
                 String message = ui.formatDeleted(removed, tasks.size());
                 saveTasks();
                 return message;
-            } else if (command.equals("todo")) {
-                Task task = Parser.parseTodo(input);
-                tasks.add(task);
-                String message = ui.formatAdded(task, tasks.size());
-                saveTasks();
-                return message;
-            } else if (command.equals("deadline")) {
-                Task task = Parser.parseDeadline(input);
-                tasks.add(task);
-                String message = ui.formatAdded(task, tasks.size());
-                saveTasks();
-                return message;
-            } else if (command.equals("event")) {
-                Task task = Parser.parseEvent(input);
-                tasks.add(task);
-                String message = ui.formatAdded(task, tasks.size());
-                saveTasks();
-                return message;
-            } else {
+            }
+            case "todo":
+                return addTaskAndRespond(Parser.parseTodo(input));
+            case "deadline":
+                return addTaskAndRespond(Parser.parseDeadline(input));
+            case "event":
+                return addTaskAndRespond(Parser.parseEvent(input));
+            default:
                 throw new WaddlesException("OOPS!!! I'm sorry, but I don't know what that means :-(");
             }
         } catch (WaddlesException e) {
             return e.getMessage();
         }
+    }
+
+    /**
+     * Adds a task to the list, persists the change, and builds the
+     * confirmation message shown to the user. Shared by the todo, deadline,
+     * and event commands, which differ only in how the task is parsed.
+     *
+     * @param task The task to add.
+     * @return The confirmation message to show the user.
+     */
+    private String addTaskAndRespond(Task task) {
+        tasks.add(task);
+        String message = ui.formatAdded(task, tasks.size());
+        saveTasks();
+        return message;
     }
 
     /**
