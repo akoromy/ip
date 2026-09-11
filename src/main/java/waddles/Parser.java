@@ -40,6 +40,8 @@ public class Parser {
         if (index < 0 || index >= taskCount) {
             throw new WaddlesException("OOPS!!! That task number doesn't exist.");
         }
+        assert index >= 0 && index < taskCount : "index must be within bounds here, since the "
+                + "out-of-range case above already returns via an exception";
         return index;
     }
 
