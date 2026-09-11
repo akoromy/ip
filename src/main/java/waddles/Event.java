@@ -13,6 +13,7 @@ import java.time.format.DateTimeParseException;
 public class Event extends Task {
     private static final DateTimeFormatter OUTPUT_FORMAT = DateTimeFormatter.ofPattern("MMM d yyyy");
 
+    // Not final: recur() advances from/to/fromDate/toDate in place to the next occurrence.
     private String from;
     private String to;
     private LocalDate fromDate;

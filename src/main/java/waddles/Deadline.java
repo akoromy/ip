@@ -12,6 +12,7 @@ import java.time.format.DateTimeParseException;
 public class Deadline extends Task {
     private static final DateTimeFormatter OUTPUT_FORMAT = DateTimeFormatter.ofPattern("MMM d yyyy");
 
+    // Not final: recur() advances by/byDate in place to the next occurrence.
     private String by;
     private LocalDate byDate;
     private Recurrence recurrence = Recurrence.NONE;

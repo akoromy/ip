@@ -33,7 +33,9 @@ public class Main extends Application {
             fxmlLoader.<MainWindow>getController().setWaddles(waddles);
             stage.show();
         } catch (IOException e) {
-            e.printStackTrace();
+            // As in DialogBox, the FXML layout is a bundled resource: failing to load it means
+            // the app cannot show a window at all, so fail fast instead of exiting silently.
+            throw new IllegalStateException("Failed to load MainWindow.fxml", e);
         }
     }
 }
