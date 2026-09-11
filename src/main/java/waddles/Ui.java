@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Deals with all interactions with the user: reading input and
@@ -34,11 +36,19 @@ public class Ui {
         if (matches.isEmpty()) {
             return "No matching tasks found.";
         }
-        StringBuilder sb = new StringBuilder("Here are the matching tasks in your list:");
-        for (int i = 0; i < matches.size(); i++) {
-            sb.append("\n").append(i + 1).append(".").append(matches.get(i));
-        }
-        return sb.toString();
+        return "Here are the matching tasks in your list:\n" + formatNumbered(matches);
+    }
+
+    /**
+     * Numbers a list of tasks from 1, one per line, e.g. "1.[T][X] read book".
+     *
+     * @param tasks The tasks to number.
+     * @return The numbered tasks joined with newlines.
+     */
+    private String formatNumbered(List<Task> tasks) {
+        return IntStream.range(0, tasks.size())
+                .mapToObj(i -> (i + 1) + "." + tasks.get(i))
+                .collect(Collectors.joining("\n"));
     }
 
     /**
@@ -232,13 +242,6 @@ public class Ui {
         if (tasks.size() == 0) {
             return "Your task list is empty.";
         }
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < tasks.size(); i++) {
-            if (i > 0) {
-                sb.append("\n");
-            }
-            sb.append(i + 1).append(".").append(tasks.get(i));
-        }
-        return sb.toString();
+        return formatNumbered(tasks.getAll());
     }
 }
