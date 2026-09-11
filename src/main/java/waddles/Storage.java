@@ -36,11 +36,11 @@ public class Storage {
             parentDir.mkdirs();
         }
 
-        FileWriter writer = new FileWriter(file);
-        for (Task task : tasks) {
-            writer.write(taskToFileFormat(task) + System.lineSeparator());
+        try (FileWriter writer = new FileWriter(file)) {
+            for (Task task : tasks) {
+                writer.write(taskToFileFormat(task) + System.lineSeparator());
+            }
         }
-        writer.close();
     }
 
     /**
@@ -56,8 +56,7 @@ public class Storage {
             return tasks;
         }
 
-        try {
-            Scanner fileScanner = new Scanner(file);
+        try (Scanner fileScanner = new Scanner(file)) {
             while (fileScanner.hasNextLine()) {
                 String line = fileScanner.nextLine();
                 if (line.trim().isEmpty()) {
@@ -68,7 +67,6 @@ public class Storage {
                     tasks.add(task);
                 }
             }
-            fileScanner.close();
         } catch (IOException e) {
             return new ArrayList<>();
         }
