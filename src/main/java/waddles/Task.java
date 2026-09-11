@@ -51,6 +51,26 @@ public class Task {
         return description;
     }
 
+    /**
+     * Returns whether this task repeats on a schedule (e.g. weekly). Always
+     * false for a plain Task; overridden by {@link Deadline} and
+     * {@link Event} once a recurrence has been set on them.
+     *
+     * @return True if this task recurs.
+     */
+    public boolean isRecurring() {
+        return false;
+    }
+
+    /**
+     * Advances a recurring task to its next occurrence: moves its date(s)
+     * forward by its recurrence period and marks it not-done again. Only
+     * meaningful when {@link #isRecurring()} is true.
+     */
+    public void recur() {
+        throw new UnsupportedOperationException("This task does not recur");
+    }
+
     @Override
     public String toString() {
         return "[" + getStatusIcon() + "] " + description;

@@ -165,6 +165,17 @@ public class Ui {
         return "Nice! I've marked this task as done:\n  " + task;
     }
 
+    /**
+     * Formats a confirmation that a recurring task's occurrence was completed
+     * and rescheduled to its next occurrence.
+     *
+     * @param task The task that was rescheduled.
+     * @return The formatted message.
+     */
+    public String formatRecurred(Task task) {
+        return "Nice! I've marked this task as done, and booked its next occurrence:\n  " + task;
+    }
+
     public void showUnmarked(Task task) {
         System.out.println(formatUnmarked(task));
     }
