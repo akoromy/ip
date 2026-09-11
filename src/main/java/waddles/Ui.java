@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
  * both interfaces without duplicating it.
  */
 public class Ui {
-    private Scanner scanner;
+    private final Scanner scanner;
 
     public Ui() {
         scanner = new Scanner(System.in);

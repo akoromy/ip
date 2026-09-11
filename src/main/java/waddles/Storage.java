@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
  * Deals with loading tasks from, and saving tasks to, the hard disk.
  */
 public class Storage {
-    private String filePath;
+    private final String filePath;
 
     /**
      * Creates a Storage that reads from and writes to the given file path.
@@ -43,9 +43,9 @@ public class Storage {
                 .map(this::taskToFileFormat)
                 .collect(Collectors.joining(System.lineSeparator(), "", System.lineSeparator()));
 
-        FileWriter writer = new FileWriter(file);
-        writer.write(content);
-        writer.close();
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write(content);
+        }
     }
 
     /**
@@ -61,8 +61,7 @@ public class Storage {
             return tasks;
         }
 
-        try {
-            Scanner fileScanner = new Scanner(file);
+        try (Scanner fileScanner = new Scanner(file)) {
             while (fileScanner.hasNextLine()) {
                 String line = fileScanner.nextLine();
                 if (line.trim().isEmpty()) {
@@ -73,7 +72,6 @@ public class Storage {
                     tasks.add(task);
                 }
             }
-            fileScanner.close();
         } catch (IOException e) {
             return new ArrayList<>();
         }
@@ -143,7 +141,10 @@ public class Storage {
                 task.markAsDone();
             }
             return task;
-        } catch (Exception e) {
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // A line with fewer " | "-delimited fields than its declared type requires
+            // (e.g. a Deadline missing its "by" field) is the only failure mode expected
+            // from a corrupted data file; anything else should surface as a real bug.
             return null;
         }
     }

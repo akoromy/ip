@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
  * Contains the task list and operations to add, delete, and retrieve tasks.
  */
 public class TaskList {
-    private List<Task> tasks;
+    private final List<Task> tasks;
 
     /**
      * Creates an empty TaskList.
