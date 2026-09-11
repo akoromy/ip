@@ -14,11 +14,51 @@ public class Deadline extends Task {
 
     private String by;
     private LocalDate byDate;
+    private Recurrence recurrence = Recurrence.NONE;
 
     public Deadline(String description, String by) {
         super(description);
         this.by = by;
         this.byDate = parseDate(by);
+    }
+
+    /**
+     * Returns whether this deadline's date was understood as a structured
+     * yyyy-mm-dd date, which is required for recurrence to be able to
+     * compute a next occurrence.
+     *
+     * @return True if the date was parsed successfully.
+     */
+    public boolean hasStructuredDate() {
+        return byDate != null;
+    }
+
+    /**
+     * Sets how often this deadline repeats.
+     *
+     * @param recurrence The recurrence period; use {@link Recurrence#NONE} for a one-off deadline.
+     */
+    public void setRecurrence(Recurrence recurrence) {
+        this.recurrence = recurrence;
+    }
+
+    public Recurrence getRecurrence() {
+        return recurrence;
+    }
+
+    @Override
+    public boolean isRecurring() {
+        return recurrence != Recurrence.NONE;
+    }
+
+    @Override
+    public void recur() {
+        if (!isRecurring()) {
+            throw new UnsupportedOperationException("This deadline does not recur");
+        }
+        byDate = recurrence.advance(byDate);
+        by = byDate.toString();
+        markAsNotDone();
     }
 
     /**
@@ -42,6 +82,7 @@ public class Deadline extends Task {
     @Override
     public String toString() {
         String displayBy = (byDate != null) ? byDate.format(OUTPUT_FORMAT) : by;
-        return "[D]" + super.toString() + " (by: " + displayBy + ")";
+        String recurrenceSuffix = isRecurring() ? " (every " + recurrence.displayLabel() + ")" : "";
+        return "[D]" + super.toString() + " (by: " + displayBy + ")" + recurrenceSuffix;
     }
 }

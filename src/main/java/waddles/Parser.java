@@ -63,6 +63,14 @@ public class Parser {
      */
     public static Task parseDeadline(String input) throws WaddlesException {
         String rest = input.length() > 8 ? input.substring(8).trim() : "";
+
+        Recurrence recurrence = Recurrence.NONE;
+        if (rest.contains(" /every ")) {
+            String[] withRecurrence = rest.split(" /every ", 2);
+            rest = withRecurrence[0].trim();
+            recurrence = parseRecurrenceKeyword(withRecurrence[1].trim());
+        }
+
         if (!rest.contains(" /by ")) {
             throw new WaddlesException(
                     "OOPS!!! A deadline needs a description and a /by date, "
@@ -74,7 +82,17 @@ public class Parser {
         if (description.isEmpty() || by.isEmpty()) {
             throw new WaddlesException("OOPS!!! A deadline needs both a description and a /by date.");
         }
-        return new Deadline(description, by);
+
+        Deadline deadline = new Deadline(description, by);
+        if (recurrence != Recurrence.NONE) {
+            if (!deadline.hasStructuredDate()) {
+                throw new WaddlesException(
+                        "OOPS!!! A recurring deadline needs its date in yyyy-mm-dd format, "
+                                + "e.g. deadline return book /by 2024-12-01 /every week");
+            }
+            deadline.setRecurrence(recurrence);
+        }
+        return deadline;
     }
 
     /**
@@ -86,6 +104,14 @@ public class Parser {
      */
     public static Task parseEvent(String input) throws WaddlesException {
         String rest = input.length() > 5 ? input.substring(5).trim() : "";
+
+        Recurrence recurrence = Recurrence.NONE;
+        if (rest.contains(" /every ")) {
+            String[] withRecurrence = rest.split(" /every ", 2);
+            rest = withRecurrence[0].trim();
+            recurrence = parseRecurrenceKeyword(withRecurrence[1].trim());
+        }
+
         if (!rest.contains(" /from ") || !rest.contains(" /to ")) {
             throw new WaddlesException(
                     "OOPS!!! An event needs a description, a /from time, and a /to time, "
@@ -99,7 +125,34 @@ public class Parser {
         if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
             throw new WaddlesException("OOPS!!! An event needs a description, a /from time, and a /to time.");
         }
-        return new Event(description, from, to);
+
+        Event event = new Event(description, from, to);
+        if (recurrence != Recurrence.NONE) {
+            if (!event.hasStructuredDate()) {
+                throw new WaddlesException(
+                        "OOPS!!! A recurring event needs both dates in yyyy-mm-dd format, "
+                                + "e.g. event standup /from 2024-12-01 /to 2024-12-01 /every day");
+            }
+            event.setRecurrence(recurrence);
+        }
+        return event;
+    }
+
+    /**
+     * Parses the word after "/every" (e.g. "week") into a Recurrence.
+     *
+     * @param keyword The word the user typed.
+     * @return The matching Recurrence.
+     * @throws WaddlesException If the keyword isn't one of the recognised recurrence periods.
+     */
+    private static Recurrence parseRecurrenceKeyword(String keyword) throws WaddlesException {
+        Recurrence recurrence = Recurrence.fromKeyword(keyword);
+        if (recurrence == null) {
+            throw new WaddlesException(
+                    "OOPS!!! /every must be followed by one of: daily, weekly, monthly "
+                            + "(or day, week, month)");
+        }
+        return recurrence;
     }
 
     /**

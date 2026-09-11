@@ -85,10 +85,11 @@ public class Storage {
         String doneFlag = task.isDone() ? "1" : "0";
         if (task instanceof Deadline) {
             Deadline d = (Deadline) task;
-            return joinFields("D", doneFlag, task.getDescription(), d.getBy());
+            return joinFields("D", doneFlag, task.getDescription(), d.getBy(), d.getRecurrence().name());
         } else if (task instanceof Event) {
             Event e = (Event) task;
-            return joinFields("E", doneFlag, task.getDescription(), e.getFrom(), e.getTo());
+            return joinFields(
+                    "E", doneFlag, task.getDescription(), e.getFrom(), e.getTo(), e.getRecurrence().name());
         } else {
             return joinFields("T", doneFlag, task.getDescription());
         }
@@ -124,11 +125,21 @@ public class Storage {
                 task = new ToDo(description);
             } else if (type.equals("D")) {
                 String by = parts[3].trim();
-                task = new Deadline(description, by);
+                Deadline deadline = new Deadline(description, by);
+                // The recurrence field was added after this file format was first used, so
+                // older data files may not have it; treat a missing field as NONE.
+                if (parts.length > 4) {
+                    deadline.setRecurrence(Recurrence.fromStorageCode(parts[4].trim()));
+                }
+                task = deadline;
             } else if (type.equals("E")) {
                 String from = parts[3].trim();
                 String to = parts[4].trim();
-                task = new Event(description, from, to);
+                Event event = new Event(description, from, to);
+                if (parts.length > 5) {
+                    event.setRecurrence(Recurrence.fromStorageCode(parts[5].trim()));
+                }
+                task = event;
             } else {
                 return null;
             }
