@@ -18,6 +18,8 @@ public class Deadline extends Task {
 
     public Deadline(String description, String by) {
         super(description);
+        assert by != null && !by.isEmpty() : "Deadline 'by' text should never be null/empty; "
+                + "callers must validate user input before constructing a Deadline";
         this.by = by;
         this.byDate = parseDate(by);
     }

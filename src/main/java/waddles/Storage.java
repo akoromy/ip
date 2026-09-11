@@ -82,6 +82,7 @@ public class Storage {
      * @return The task formatted as a single line of text.
      */
     private String taskToFileFormat(Task task) {
+        assert task != null : "Cannot serialize a null task";
         String doneFlag = task.isDone() ? "1" : "0";
         if (task instanceof Deadline) {
             Deadline d = (Deadline) task;
