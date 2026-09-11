@@ -40,6 +40,15 @@ public class Deadline extends Task {
     }
 
     @Override
+    public Task copy() {
+        Deadline copy = new Deadline(getDescription(), by);
+        if (isDone()) {
+            copy.markAsDone();
+        }
+        return copy;
+    }
+
+    @Override
     public String toString() {
         String displayBy = (byDate != null) ? byDate.format(OUTPUT_FORMAT) : by;
         return "[D]" + super.toString() + " (by: " + displayBy + ")";

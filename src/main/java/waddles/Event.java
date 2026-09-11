@@ -56,6 +56,15 @@ public class Event extends Task {
     }
 
     @Override
+    public Task copy() {
+        Event copy = new Event(getDescription(), from, to);
+        if (isDone()) {
+            copy.markAsDone();
+        }
+        return copy;
+    }
+
+    @Override
     public String toString() {
         String displayFrom = (fromDate != null) ? fromDate.format(OUTPUT_FORMAT) : from;
         String displayTo = (toDate != null) ? toDate.format(OUTPUT_FORMAT) : to;

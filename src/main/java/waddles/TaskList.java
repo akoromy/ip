@@ -57,6 +57,17 @@ public class TaskList {
     }
 
     /**
+     * Replaces the entire contents of this list with the given tasks, e.g.
+     * to restore a previously saved snapshot for the "undo" command.
+     *
+     * @param newTasks The tasks that should make up the list going forward.
+     */
+    public void setAll(List<Task> newTasks) {
+        tasks.clear();
+        tasks.addAll(newTasks);
+    }
+
+    /**
      * Returns the tasks whose description contains the given keyword.
      *
      * @param keyword The keyword to search for.

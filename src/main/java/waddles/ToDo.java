@@ -15,6 +15,15 @@ public class ToDo extends Task {
     }
 
     @Override
+    public Task copy() {
+        ToDo copy = new ToDo(getDescription());
+        if (isDone()) {
+            copy.markAsDone();
+        }
+        return copy;
+    }
+
+    @Override
     public String toString() {
         return "[T]" + super.toString();
     }

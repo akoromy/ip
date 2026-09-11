@@ -49,6 +49,24 @@ public class Task {
         return description;
     }
 
+    /**
+     * Creates an independent copy of this task, with the same description
+     * and done status. Used by the "undo" command to snapshot the task list
+     * before a mutating command, since Task objects are mutable (e.g.
+     * markAsDone()) and a plain reference copy of the list would still let
+     * later mutations affect the snapshot. Overridden by subclasses that
+     * carry extra fields (e.g. a Deadline's date).
+     *
+     * @return A new Task equivalent to this one.
+     */
+    public Task copy() {
+        Task copy = new Task(description);
+        if (isDone) {
+            copy.markAsDone();
+        }
+        return copy;
+    }
+
     @Override
     public String toString() {
         return "[" + getStatusIcon() + "] " + description;

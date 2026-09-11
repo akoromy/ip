@@ -1,6 +1,8 @@
 package waddles;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Entry point for the Waddles chatbot. Coordinates the Ui, Storage,
@@ -13,6 +15,15 @@ public class Waddles {
     private Storage storage;
     private TaskList tasks;
     private Ui ui;
+
+    /**
+     * A snapshot of the task list taken just before the most recent
+     * mutating command, restored by "undo". Null means there is nothing to
+     * undo (either no mutating command has run yet, or the last one was
+     * already undone). This supports undoing only the single most recent
+     * command, by design.
+     */
+    private List<Task> undoSnapshot;
 
     /**
      * Creates a Waddles chatbot that persists tasks to the given file path.
@@ -71,38 +82,46 @@ public class Waddles {
             } else if (command.equals("find")) {
                 String keyword = Parser.parseFind(input);
                 return ui.formatFoundTasks(tasks.find(keyword));
+            } else if (command.equals("undo")) {
+                return undoLastCommand();
             } else if (command.equals("mark")) {
                 int index = Parser.parseTaskIndex(input, "mark", tasks.size());
+                saveUndoSnapshot();
                 tasks.get(index).markAsDone();
                 String message = ui.formatMarked(tasks.get(index));
                 saveTasks();
                 return message;
             } else if (command.equals("unmark")) {
                 int index = Parser.parseTaskIndex(input, "unmark", tasks.size());
+                saveUndoSnapshot();
                 tasks.get(index).markAsNotDone();
                 String message = ui.formatUnmarked(tasks.get(index));
                 saveTasks();
                 return message;
             } else if (command.equals("delete")) {
                 int index = Parser.parseTaskIndex(input, "delete", tasks.size());
+                saveUndoSnapshot();
                 Task removed = tasks.delete(index);
                 String message = ui.formatDeleted(removed, tasks.size());
                 saveTasks();
                 return message;
             } else if (command.equals("todo")) {
                 Task task = Parser.parseTodo(input);
+                saveUndoSnapshot();
                 tasks.add(task);
                 String message = ui.formatAdded(task, tasks.size());
                 saveTasks();
                 return message;
             } else if (command.equals("deadline")) {
                 Task task = Parser.parseDeadline(input);
+                saveUndoSnapshot();
                 tasks.add(task);
                 String message = ui.formatAdded(task, tasks.size());
                 saveTasks();
                 return message;
             } else if (command.equals("event")) {
                 Task task = Parser.parseEvent(input);
+                saveUndoSnapshot();
                 tasks.add(task);
                 String message = ui.formatAdded(task, tasks.size());
                 saveTasks();
@@ -113,6 +132,38 @@ public class Waddles {
         } catch (WaddlesException e) {
             return e.getMessage();
         }
+    }
+
+    /**
+     * Records a deep copy of the current task list as the one "undo" will
+     * restore. Called right before a mutating command takes effect. Uses
+     * Task#copy() rather than a reference copy of the list, since the same
+     * Task objects would otherwise still be affected by later mutations
+     * (e.g. a later markAsDone() would retroactively "undo" as done too).
+     */
+    private void saveUndoSnapshot() {
+        List<Task> snapshot = new ArrayList<>();
+        for (Task task : tasks.getAll()) {
+            snapshot.add(task.copy());
+        }
+        undoSnapshot = snapshot;
+    }
+
+    /**
+     * Restores the task list to how it was just before the most recent
+     * mutating command (add, delete, mark, or unmark), i.e. a single-level
+     * undo. Calling this again immediately after has nothing left to undo.
+     *
+     * @return The message to show the user.
+     */
+    private String undoLastCommand() {
+        if (undoSnapshot == null) {
+            return "OOPS!!! There's nothing to undo yet.";
+        }
+        tasks.setAll(undoSnapshot);
+        undoSnapshot = null;
+        saveTasks();
+        return "Done! I've undone your last change:\n" + ui.formatTaskList(tasks);
     }
 
     /**
