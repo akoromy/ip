@@ -103,6 +103,16 @@ public class Event extends Task {
     }
 
     @Override
+    public Task copy() {
+        Event copy = new Event(getDescription(), from, to);
+        copy.setRecurrence(recurrence);
+        if (isDone()) {
+            copy.markAsDone();
+        }
+        return copy;
+    }
+
+    @Override
     public boolean occursOn(LocalDate date) {
         return fromDate != null && toDate != null && !date.isBefore(fromDate) && !date.isAfter(toDate);
     }

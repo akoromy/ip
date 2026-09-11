@@ -54,6 +54,24 @@ public class Task {
     }
 
     /**
+     * Creates an independent copy of this task, with the same description
+     * and done status. Used by the "undo" command to snapshot the task list
+     * before a mutating command, since Task objects are mutable (e.g.
+     * markAsDone()) and a plain reference copy of the list would still let
+     * later mutations affect the snapshot. Overridden by subclasses that
+     * carry extra fields (e.g. a Deadline's date).
+     *
+     * @return A new Task equivalent to this one.
+     */
+    public Task copy() {
+        Task copy = new Task(description);
+        if (isDone) {
+            copy.markAsDone();
+        }
+        return copy;
+    }
+
+    /**
      * Returns whether this task falls on the given date, for the "schedule"
      * command. A plain Task has no date, so this is always false;
      * {@link Deadline} and {@link Event} override it.

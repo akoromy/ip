@@ -2,6 +2,7 @@ package waddles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -36,5 +37,27 @@ public class RecurrenceTest {
     public void deadline_withoutRecurrence_isNotRecurring() {
         Deadline deadline = new Deadline("pay rent", "2024-01-01");
         assertFalse(deadline.isRecurring());
+    }
+
+    @Test
+    public void deadlineCopy_recurring_preservesRecurrence() {
+        Deadline deadline = new Deadline("pay rent", "2024-01-01");
+        deadline.setRecurrence(Recurrence.MONTHLY);
+
+        Task copy = deadline.copy();
+
+        assertTrue(copy.isRecurring());
+        assertEquals(Recurrence.MONTHLY, ((Deadline) copy).getRecurrence());
+    }
+
+    @Test
+    public void eventCopy_recurring_preservesRecurrence() {
+        Event event = new Event("standup", "2024-01-01", "2024-01-01");
+        event.setRecurrence(Recurrence.DAILY);
+
+        Task copy = event.copy();
+
+        assertTrue(copy.isRecurring());
+        assertEquals(Recurrence.DAILY, ((Event) copy).getRecurrence());
     }
 }

@@ -83,6 +83,16 @@ public class Deadline extends Task {
     }
 
     @Override
+    public Task copy() {
+        Deadline copy = new Deadline(getDescription(), by);
+        copy.setRecurrence(recurrence);
+        if (isDone()) {
+            copy.markAsDone();
+        }
+        return copy;
+    }
+
+    @Override
     public boolean occursOn(LocalDate date) {
         return byDate != null && byDate.equals(date);
     }
