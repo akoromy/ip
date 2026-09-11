@@ -70,4 +70,8 @@ shadowJar {
 
 run {
     standardInput = System.in
+    // Assertions (see the `assert` statements throughout the source) are JVM-disabled by
+    // default; turn them on for `gradlew run` so they actually guard against programming
+    // errors during development, matching the `enableAssertions` default already used by `test`.
+    enableAssertions = true
 }
