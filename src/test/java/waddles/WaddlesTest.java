@@ -24,7 +24,7 @@ public class WaddlesTest {
 
         waddles.getResponse("undo");
 
-        assertEquals("Your task list is empty.", waddles.getResponse("list"));
+        assertEquals("Your trough is empty — nothing to snort about yet!", waddles.getResponse("list"));
     }
 
     @Test

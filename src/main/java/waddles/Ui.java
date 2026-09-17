@@ -34,9 +34,9 @@ public class Ui {
      */
     public String formatFoundTasks(List<Task> matches) {
         if (matches.isEmpty()) {
-            return "No matching tasks found.";
+            return "Oink? Nothing in the trough matches that.";
         }
-        return "Here are the matching tasks in your list:\n" + formatNumbered(matches);
+        return "Found these snuffled up from your trough:\n" + formatNumbered(matches);
     }
 
     /**
@@ -70,7 +70,8 @@ public class Ui {
      * @return The formatted message.
      */
     public String formatWelcomeMessage() {
-        return "Hello! I'm Waddles.\nHow can I help you today?";
+        return "Oink! I'm Waddles, your sparkly little trough-keeper. ✨\n"
+                + "What shall we add to the trough today?";
     }
 
     public void showLine() {
@@ -92,7 +93,7 @@ public class Ui {
      * @return The formatted message.
      */
     public String formatGoodbyeMessage() {
-        return "Byeee! See you again soon:)";
+        return "Byeee! Waddles is off to roll in the mud. ✨ Come back soon!";
     }
 
     /**
@@ -118,7 +119,7 @@ public class Ui {
      * @return The formatted message.
      */
     public String formatLoadingError() {
-        return "Warning: could not read saved data. Starting with an empty list.";
+        return "Oink? Waddles couldn't sniff out your saved data, so we're starting with an empty trough.";
     }
 
     public void showSavingError() {
@@ -131,7 +132,7 @@ public class Ui {
      * @return The formatted message.
      */
     public String formatSavingError() {
-        return "Warning: could not save your tasks to disk.";
+        return "Uh-oh, Waddles tripped in the mud and couldn't save your trough to disk!";
     }
 
     /**
@@ -152,7 +153,19 @@ public class Ui {
      * @return The formatted message.
      */
     public String formatAdded(Task task, int size) {
-        return "Got it. I've added this task:\n  " + task + "\nNow you have " + size + " tasks in the list.";
+        return "Oink-cellent! I've tossed this into the trough:\n  " + task
+                + "\nThat's " + size + " " + taskWord(size) + " waiting to be gobbled up. ✨";
+    }
+
+    /**
+     * Returns "task" or "tasks" depending on the count, so confirmation
+     * messages read naturally whether there is one task or several.
+     *
+     * @param count The number of tasks.
+     * @return "task" if count is 1, otherwise "tasks".
+     */
+    private String taskWord(int count) {
+        return count == 1 ? "task" : "tasks";
     }
 
     public void showMarked(Task task) {
@@ -166,7 +179,7 @@ public class Ui {
      * @return The formatted message.
      */
     public String formatMarked(Task task) {
-        return "Nice! I've marked this task as done:\n  " + task;
+        return "Yay! Crossed off and oink-credibly satisfying. ✨\n  " + task;
     }
 
     /**
@@ -177,7 +190,7 @@ public class Ui {
      * @return The formatted message.
      */
     public String formatRecurred(Task task) {
-        return "Nice! I've marked this task as done, and booked its next occurrence:\n  " + task;
+        return "Yay! Done and dusted — Waddles already booked the next round for you. ✨\n  " + task;
     }
 
     public void showUnmarked(Task task) {
@@ -191,7 +204,7 @@ public class Ui {
      * @return The formatted message.
      */
     public String formatUnmarked(Task task) {
-        return "OK, I've marked this task as not done yet:\n  " + task;
+        return "Alrighty, back into the trough it goes — not done yet:\n  " + task;
     }
 
     /**
@@ -212,7 +225,8 @@ public class Ui {
      * @return The formatted message.
      */
     public String formatDeleted(Task task, int size) {
-        return "Noted. I've removed this task:\n  " + task + "\nNow you have " + size + " tasks in the list.";
+        return "Noted! I've swept this one out of the sty:\n  " + task
+                + "\nThat leaves " + size + " " + taskWord(size) + " in the trough. ✨";
     }
 
     /**
@@ -223,9 +237,9 @@ public class Ui {
      * @return The formatted message.
      */
     public String formatSchedule(LocalDate date, List<Task> tasksOnDate) {
-        String header = "Here's your schedule for " + date.format(SCHEDULE_DATE_FORMAT) + ":";
+        String header = "Here's the trough lineup for " + date.format(SCHEDULE_DATE_FORMAT) + ":";
         if (tasksOnDate.isEmpty()) {
-            return header + "\nNothing scheduled that day. Enjoy the free time!";
+            return header + "\nNothing scheduled — a whole day free to roll in the mud! ✨";
         }
         StringBuilder sb = new StringBuilder(header);
         for (int i = 0; i < tasksOnDate.size(); i++) {
@@ -251,7 +265,7 @@ public class Ui {
      */
     public String formatTaskList(TaskList tasks) {
         if (tasks.size() == 0) {
-            return "Your task list is empty.";
+            return "Your trough is empty — nothing to snort about yet!";
         }
         return formatNumbered(tasks.getAll());
     }

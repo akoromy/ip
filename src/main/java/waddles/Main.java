@@ -29,7 +29,7 @@ public class Main extends Application {
             Scene scene = new Scene(ap);
             scene.getStylesheets().add(Main.class.getResource("/css/main.css").toExternalForm());
             stage.setScene(scene);
-            stage.setTitle("Waddles");
+            stage.setTitle("Waddles ✨");
             // Keep the window resizable (the default), but stop it from being resized so small
             // that the chat bubbles and input bar no longer fit sensibly.
             stage.setMinWidth(360);

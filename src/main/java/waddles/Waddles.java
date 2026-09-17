@@ -132,7 +132,7 @@ public class Waddles {
                 return addTaskAndRespond(Parser.parseEvent(input));
             default:
                 throw new WaddlesException(
-                        WaddlesException.ERROR_PREFIX + " I'm sorry, but I don't know what that means :-(");
+                        WaddlesException.ERROR_PREFIX + " Oink?! I have no idea what that means.");
             }
         } catch (WaddlesException e) {
             return e.getMessage();
@@ -179,12 +179,12 @@ public class Waddles {
      */
     private String undoLastCommand() {
         if (undoSnapshot == null) {
-            return WaddlesException.ERROR_PREFIX + " There's nothing to undo yet.";
+            return WaddlesException.ERROR_PREFIX + " Oink! There's nothing to undo yet.";
         }
         tasks.setAll(undoSnapshot);
         undoSnapshot = null;
         saveTasks();
-        return "Done! I've undone your last change:\n" + ui.formatTaskList(tasks);
+        return "Oink-kay, un-done! Rewound like a happy curly tail:\n" + ui.formatTaskList(tasks);
     }
 
     /**
