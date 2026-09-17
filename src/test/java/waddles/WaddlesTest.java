@@ -39,6 +39,22 @@ public class WaddlesTest {
     }
 
     @Test
+    public void mark_recurringDeadline_confirmationShowsJustCompletedOccurrenceAsDone() {
+        Waddles waddles = newWaddles();
+        waddles.getResponse("deadline pay rent /by 2024-01-01 /every month");
+
+        String response = waddles.getResponse("mark 1");
+
+        // The confirmation should prove the occurrence just marked (Jan, now done) was
+        // completed, not the next booked occurrence (Feb, still unmarked) it advances to.
+        assertTrue(response.contains("[D][X] pay rent (by: Jan 1 2024) (every month)"));
+        assertTrue(!response.contains("Feb 1 2024"));
+
+        String list = waddles.getResponse("list");
+        assertTrue(list.contains("[D][ ] pay rent (by: Feb 1 2024) (every month)"));
+    }
+
+    @Test
     public void undo_afterDeletingTask_restoresTheTask() {
         Waddles waddles = newWaddles();
         waddles.getResponse("todo read book");

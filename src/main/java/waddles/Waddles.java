@@ -98,9 +98,14 @@ public class Waddles {
                 String message;
                 if (task.isRecurring()) {
                     // Completing an occurrence of a recurring task books the next one,
-                    // rather than leaving it marked done forever.
+                    // rather than leaving it marked done forever. recur() immediately
+                    // advances the task's own date and resets it to not-done, so the
+                    // confirmation is built from a done snapshot of the occurrence that
+                    // was just completed, taken before recur() moves the task on.
+                    Task completedOccurrence = task.copy();
+                    completedOccurrence.markAsDone();
                     task.recur();
-                    message = ui.formatRecurred(task);
+                    message = ui.formatRecurred(completedOccurrence);
                 } else {
                     task.markAsDone();
                     message = ui.formatMarked(task);
