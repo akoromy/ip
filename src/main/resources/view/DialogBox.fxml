@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
 
 <fx:root type="javafx.scene.layout.HBox" xmlns="http://javafx.com/javafx/17"
          xmlns:fx="http://javafx.com/fxml/1"
@@ -11,12 +9,9 @@
     <children>
         <Label fx:id="dialog" text="Label" wrapText="true" minHeight="-Infinity"
                HBox.hgrow="ALWAYS" styleClass="dialog-label" />
-        <StackPane styleClass="avatar" minWidth="40.0" minHeight="40.0"
-                   prefWidth="40.0" prefHeight="40.0" maxWidth="40.0" maxHeight="40.0">
-            <children>
-                <ImageView fx:id="avatar" fitWidth="36.0" fitHeight="36.0" preserveRatio="true" />
-            </children>
-        </StackPane>
+        <Label fx:id="avatar" text="" alignment="CENTER" styleClass="avatar"
+               minWidth="50.0" minHeight="50.0" prefWidth="50.0" prefHeight="50.0"
+               maxWidth="50.0" maxHeight="50.0" style="-fx-font-size: 22px;" />
     </children>
     <padding>
         <javafx.geometry.Insets bottom="5" left="5" right="5" top="5" />

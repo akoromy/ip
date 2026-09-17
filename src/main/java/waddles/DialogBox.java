@@ -12,32 +12,29 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.shape.Circle;
 
 /**
  * A single row in the chat history: a speech-bubble style {@link Label}
- * paired with a small circular avatar picture, defined in
+ * paired with a circular emoji avatar, defined in
  * {@code /view/DialogBox.fxml}. User messages are shown as-is; Waddles'
  * messages are produced via {@link #getWaddlesDialog} which mirrors the
  * layout so the avatar appears on the opposite side.
  */
 public class DialogBox extends HBox {
-    private static final Image USER_IMAGE = new Image(DialogBox.class.getResourceAsStream("/images/mabel.png"));
-    private static final Image WADDLES_IMAGE = new Image(DialogBox.class.getResourceAsStream("/images/waddles.png"));
+    private static final String USER_EMOJI = "👤";
+    private static final String WADDLES_EMOJI = "🐷";
 
     /** How much horizontal space (avatar + spacing + padding) to leave outside the bubble when sizing it. */
-    private static final double NON_BUBBLE_WIDTH = 90.0;
+    private static final double NON_BUBBLE_WIDTH = 100.0;
     private static final double MIN_BUBBLE_WIDTH = 140.0;
 
     @FXML
     private Label dialog;
     @FXML
-    private ImageView avatar;
+    private Label avatar;
 
-    private DialogBox(String text, Image image) {
+    private DialogBox(String text, String emoji) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(MainWindow.class.getResource("/view/DialogBox.fxml"));
             fxmlLoader.setController(this);
@@ -53,8 +50,7 @@ public class DialogBox extends HBox {
         }
 
         dialog.setText(text);
-        avatar.setImage(image);
-        avatar.setClip(new Circle(18, 18, 18));
+        avatar.setText(emoji);
     }
 
     /**
@@ -94,13 +90,13 @@ public class DialogBox extends HBox {
     }
 
     public static DialogBox getUserDialog(String text) {
-        DialogBox db = new DialogBox(text, USER_IMAGE);
+        DialogBox db = new DialogBox(text, USER_EMOJI);
         db.getStyleClass().add("user-dialog");
         return db;
     }
 
     public static DialogBox getWaddlesDialog(String text) {
-        DialogBox db = new DialogBox(text, WADDLES_IMAGE);
+        DialogBox db = new DialogBox(text, WADDLES_EMOJI);
         db.flip();
         db.getStyleClass().add("waddles-dialog");
         return db;

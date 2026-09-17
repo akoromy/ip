@@ -2,11 +2,18 @@
     -fx-background-color: #FFF8F0;
     -fx-font-family: "Comic Sans MS", "Segoe UI", "SansSerif";
 }
+/* The forest background sits behind the whole conversation; bubbles keep
+   fully opaque fills (see .waddles-dialog/.user-dialog below) so text stays
+   readable on top of it regardless of what's behind them. */
 .conversation, .conversation > .viewport {
     -fx-background-color: #FFF8F0;
+    -fx-background-image: url("../images/forest_background.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+    -fx-background-size: cover;
 }
 .dialog-container {
-    -fx-background-color: #FFF8F0;
+    -fx-background-color: transparent;
     -fx-padding: 12;
     -fx-spacing: 6;
 }
@@ -42,8 +49,7 @@
     -fx-effect: dropshadow(gaussian, rgba(226,86,75,0.35), 8, 0.15, 0, 2);
 }
 
-/* Small circular frame behind each avatar picture; the picture itself has a
-   transparent background, and the ring color reflects the character. */
+/* Circular emoji avatar; the ring/fill color reflects the character. */
 .avatar {
     -fx-background-radius: 50%;
     -fx-border-radius: 50%;
