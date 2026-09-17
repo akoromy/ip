@@ -38,10 +38,11 @@ public class Parser {
         try {
             index = Integer.parseInt(numberPart) - 1;
         } catch (NumberFormatException e) {
-            throw new WaddlesException("OOPS!!! Please provide a valid task number, e.g. " + command + " 2");
+            throw new WaddlesException(
+                    WaddlesException.ERROR_PREFIX + " Please provide a valid task number, e.g. " + command + " 2");
         }
         if (index < 0 || index >= taskCount) {
-            throw new WaddlesException("OOPS!!! That task number doesn't exist.");
+            throw new WaddlesException(WaddlesException.ERROR_PREFIX + " That task number doesn't exist.");
         }
         assert index >= 0 && index < taskCount : "index must be within bounds here, since the "
                 + "out-of-range case above already returns via an exception";
@@ -58,7 +59,7 @@ public class Parser {
     public static Task parseTodo(String input) throws WaddlesException {
         String description = input.length() > TODO_PREFIX_LENGTH ? input.substring(TODO_PREFIX_LENGTH).trim() : "";
         if (description.isEmpty()) {
-            throw new WaddlesException("OOPS!!! The description of a todo cannot be empty.");
+            throw new WaddlesException(WaddlesException.ERROR_PREFIX + " The description of a todo cannot be empty.");
         }
         return new ToDo(description);
     }
@@ -83,21 +84,22 @@ public class Parser {
 
         if (!rest.contains(" /by ")) {
             throw new WaddlesException(
-                    "OOPS!!! A deadline needs a description and a /by date, "
+                    WaddlesException.ERROR_PREFIX + " A deadline needs a description and a /by date, "
                             + "e.g. deadline return book /by Sunday");
         }
         String[] parts = rest.split(" /by ", 2);
         String description = parts[0].trim();
         String by = parts[1].trim();
         if (description.isEmpty() || by.isEmpty()) {
-            throw new WaddlesException("OOPS!!! A deadline needs both a description and a /by date.");
+            throw new WaddlesException(
+                    WaddlesException.ERROR_PREFIX + " A deadline needs both a description and a /by date.");
         }
 
         Deadline deadline = new Deadline(description, by);
         if (recurrence != Recurrence.NONE) {
             if (!deadline.hasStructuredDate()) {
                 throw new WaddlesException(
-                        "OOPS!!! A recurring deadline needs its date in yyyy-mm-dd format, "
+                        WaddlesException.ERROR_PREFIX + " A recurring deadline needs its date in yyyy-mm-dd format, "
                                 + "e.g. deadline return book /by 2024-12-01 /every week");
             }
             deadline.setRecurrence(recurrence);
@@ -124,7 +126,7 @@ public class Parser {
 
         if (!rest.contains(" /from ") || !rest.contains(" /to ")) {
             throw new WaddlesException(
-                    "OOPS!!! An event needs a description, a /from time, and a /to time, "
+                    WaddlesException.ERROR_PREFIX + " An event needs a description, a /from time, and a /to time, "
                             + "e.g. event meeting /from Mon 2pm /to 4pm");
         }
         String[] parts = rest.split(" /from ", 2);
@@ -133,14 +135,15 @@ public class Parser {
         String from = fromTo[0].trim();
         String to = fromTo[1].trim();
         if (description.isEmpty() || from.isEmpty() || to.isEmpty()) {
-            throw new WaddlesException("OOPS!!! An event needs a description, a /from time, and a /to time.");
+            throw new WaddlesException(
+                    WaddlesException.ERROR_PREFIX + " An event needs a description, a /from time, and a /to time.");
         }
 
         Event event = new Event(description, from, to);
         if (recurrence != Recurrence.NONE) {
             if (!event.hasStructuredDate()) {
                 throw new WaddlesException(
-                        "OOPS!!! A recurring event needs both dates in yyyy-mm-dd format, "
+                        WaddlesException.ERROR_PREFIX + " A recurring event needs both dates in yyyy-mm-dd format, "
                                 + "e.g. event standup /from 2024-12-01 /to 2024-12-01 /every day");
             }
             event.setRecurrence(recurrence);
@@ -159,7 +162,7 @@ public class Parser {
         Recurrence recurrence = Recurrence.fromKeyword(keyword);
         if (recurrence == null) {
             throw new WaddlesException(
-                    "OOPS!!! /every must be followed by one of: daily, weekly, monthly "
+                    WaddlesException.ERROR_PREFIX + " /every must be followed by one of: daily, weekly, monthly "
                             + "(or day, week, month)");
         }
         return recurrence;
@@ -175,7 +178,8 @@ public class Parser {
     public static String parseFind(String input) throws WaddlesException {
         String keyword = input.length() > FIND_PREFIX_LENGTH ? input.substring(FIND_PREFIX_LENGTH).trim() : "";
         if (keyword.isEmpty()) {
-            throw new WaddlesException("OOPS!!! Please provide a keyword to search for, e.g. find book");
+            throw new WaddlesException(
+                    WaddlesException.ERROR_PREFIX + " Please provide a keyword to search for, e.g. find book");
         }
         return keyword;
     }
@@ -191,7 +195,8 @@ public class Parser {
         String text = input.length() > 8 ? input.substring(8).trim() : "";
         if (text.isEmpty()) {
             throw new WaddlesException(
-                    "OOPS!!! Please provide a date, e.g. schedule 2024-12-01 or schedule today");
+                    WaddlesException.ERROR_PREFIX
+                            + " Please provide a date, e.g. schedule 2024-12-01 or schedule today");
         }
         if (text.equalsIgnoreCase("today")) {
             return LocalDate.now();
@@ -200,7 +205,8 @@ public class Parser {
             return LocalDate.parse(text);
         } catch (DateTimeParseException e) {
             throw new WaddlesException(
-                    "OOPS!!! Please give the date as yyyy-mm-dd (e.g. 2024-12-01), or use 'today'.");
+                    WaddlesException.ERROR_PREFIX
+                            + " Please give the date as yyyy-mm-dd (e.g. 2024-12-01), or use 'today'.");
         }
     }
 }
