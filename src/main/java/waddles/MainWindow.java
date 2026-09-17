@@ -38,8 +38,7 @@ public class MainWindow extends AnchorPane {
      */
     public void setWaddles(Waddles waddles) {
         this.waddles = waddles;
-        dialogContainer.getChildren().add(
-                DialogBox.getWaddlesDialog(waddles.getWelcomeMessage()));
+        addDialog(DialogBox.getWaddlesDialog(waddles.getWelcomeMessage()), false);
     }
 
     /**
@@ -56,13 +55,30 @@ public class MainWindow extends AnchorPane {
         }
 
         String response = waddles.getResponse(input);
-        dialogContainer.getChildren().addAll(
-                DialogBox.getUserDialog(input),
-                DialogBox.getWaddlesDialog(response));
+        boolean isError = response.startsWith(WaddlesException.ERROR_PREFIX);
+        addDialog(DialogBox.getUserDialog(input), false);
+        addDialog(DialogBox.getWaddlesDialog(response), isError);
         userInput.clear();
 
         if (input.trim().equals("bye")) {
             Platform.exit();
         }
+    }
+
+    /**
+     * Adds a dialog box to the chat history, binding its bubble width to the
+     * available window width so it resizes sensibly, and highlighting it if
+     * it reports an error.
+     *
+     * @param box The dialog box to add.
+     * @param isError Whether this dialog box shows an error response, and
+     *                 should be visually flagged as such.
+     */
+    private void addDialog(DialogBox box, boolean isError) {
+        box.bindBubbleWidth(scrollPane.widthProperty());
+        if (isError) {
+            box.markAsError();
+        }
+        dialogContainer.getChildren().add(box);
     }
 }

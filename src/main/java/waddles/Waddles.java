@@ -131,7 +131,8 @@ public class Waddles {
             case "event":
                 return addTaskAndRespond(Parser.parseEvent(input));
             default:
-                throw new WaddlesException("OOPS!!! I'm sorry, but I don't know what that means :-(");
+                throw new WaddlesException(
+                        WaddlesException.ERROR_PREFIX + " I'm sorry, but I don't know what that means :-(");
             }
         } catch (WaddlesException e) {
             return e.getMessage();
@@ -178,7 +179,7 @@ public class Waddles {
      */
     private String undoLastCommand() {
         if (undoSnapshot == null) {
-            return "OOPS!!! There's nothing to undo yet.";
+            return WaddlesException.ERROR_PREFIX + " There's nothing to undo yet.";
         }
         tasks.setAll(undoSnapshot);
         undoSnapshot = null;
