@@ -68,8 +68,8 @@ public enum Recurrence {
     }
 
     /**
-     * A short noun describing the recurrence period, for use in messages
-     * like "(every week)".
+     * Returns a short noun describing the recurrence period, for use in
+     * messages like "(every week)".
      *
      * @return "day", "week", "month", or "" for NONE.
      */
