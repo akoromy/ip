@@ -71,7 +71,8 @@ public class Parser {
      *
      * @param input The full line of user input.
      * @return The parsed Deadline task.
-     * @throws WaddlesException If the description or /by date is missing.
+     * @throws WaddlesException If the description or /by date is missing,
+     *     or the /by date isn't a valid yyyy-mm-dd date.
      */
     public static Task parseDeadline(String input) throws WaddlesException {
         String rest = input.length() > DEADLINE_PREFIX_LENGTH
@@ -87,7 +88,7 @@ public class Parser {
         if (!rest.contains(" /by ")) {
             throw new WaddlesException(
                     WaddlesException.ERROR_PREFIX + " Oink! A deadline needs a description and a /by date, "
-                            + "e.g. deadline return book /by Sunday");
+                            + "e.g. deadline return book /by 2024-12-01");
         }
         String[] parts = rest.split(" /by ", 2);
         String description = parts[0].trim();
@@ -96,6 +97,7 @@ public class Parser {
             throw new WaddlesException(
                     WaddlesException.ERROR_PREFIX + " Oink! A deadline needs both a description and a /by date.");
         }
+        requireValidDate(by, "deadline return book /by 2024-12-01");
 
         Deadline deadline = new Deadline(description, by);
         if (recurrence != Recurrence.NONE) {
@@ -115,7 +117,8 @@ public class Parser {
      *
      * @param input The full line of user input.
      * @return The parsed Event task.
-     * @throws WaddlesException If the description, /from, or /to is missing.
+     * @throws WaddlesException If the description, /from, or /to is missing,
+     *     or /from or /to isn't a valid yyyy-mm-dd date.
      */
     public static Task parseEvent(String input) throws WaddlesException {
         String rest = input.length() > EVENT_PREFIX_LENGTH ? input.substring(EVENT_PREFIX_LENGTH).trim() : "";
@@ -131,7 +134,7 @@ public class Parser {
             throw new WaddlesException(
                     WaddlesException.ERROR_PREFIX
                             + " Oink! An event needs a description, a /from time, and a /to time, "
-                            + "e.g. event meeting /from Mon 2pm /to 4pm");
+                            + "e.g. event meeting /from 2024-12-01 /to 2024-12-02");
         }
         String[] parts = rest.split(" /from ", 2);
         String description = parts[0].trim();
@@ -143,6 +146,8 @@ public class Parser {
                     WaddlesException.ERROR_PREFIX
                             + " Oink! An event needs a description, a /from time, and a /to time.");
         }
+        requireValidDate(from, "event meeting /from 2024-12-01 /to 2024-12-02");
+        requireValidDate(to, "event meeting /from 2024-12-01 /to 2024-12-02");
 
         Event event = new Event(description, from, to);
         if (recurrence != Recurrence.NONE) {
@@ -155,6 +160,28 @@ public class Parser {
             event.setRecurrence(recurrence);
         }
         return event;
+    }
+
+    /**
+     * Checks that the given text is a real calendar date in the one format
+     * Waddles accepts: yyyy-mm-dd (e.g. "2024-12-01"). Any other format,
+     * including slash-separated dates like "2024/12/01", or a date that
+     * doesn't exist on the calendar (e.g. month 13), is rejected here so
+     * that invalid input is never silently stored as raw, unparsed text.
+     *
+     * @param text The text the user supplied where a date was expected.
+     * @param exampleCommand A full example command shown in the error message.
+     * @throws WaddlesException If the text isn't a valid yyyy-mm-dd date.
+     */
+    private static void requireValidDate(String text, String exampleCommand) throws WaddlesException {
+        try {
+            LocalDate.parse(text);
+        } catch (DateTimeParseException e) {
+            throw new WaddlesException(
+                    WaddlesException.ERROR_PREFIX + " Oink! '" + text + "' isn't a date I recognise — "
+                            + "dates must be given as yyyy-mm-dd (e.g. 2024-12-01), so try again, "
+                            + "e.g. " + exampleCommand);
+        }
     }
 
     /**

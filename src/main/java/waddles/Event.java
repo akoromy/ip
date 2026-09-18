@@ -6,9 +6,11 @@ import java.time.format.DateTimeParseException;
 
 /**
  * Represents an event task that occurs over a time span, from a start
- * point to an end point. Dates can optionally be given in yyyy-mm-dd
- * format for structured parsing and display; otherwise, the original
- * text is kept as-is.
+ * point to an end point. {@link Parser} rejects any /from or /to date
+ * that isn't valid yyyy-mm-dd before an Event is ever constructed from
+ * user input, so fromDate/toDate below are only ever null when an Event
+ * is built directly (e.g. from stored data) with text that doesn't parse
+ * as a date.
  */
 public class Event extends Task {
     private static final DateTimeFormatter OUTPUT_FORMAT = DateTimeFormatter.ofPattern("MMM d yyyy");

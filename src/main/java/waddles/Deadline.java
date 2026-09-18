@@ -6,8 +6,10 @@ import java.time.format.DateTimeParseException;
 
 /**
  * Represents a deadline task that must be completed by a specific date.
- * The date can optionally be given in yyyy-mm-dd format for structured
- * parsing and display; otherwise, the original text is kept as-is.
+ * {@link Parser} rejects any /by date that isn't valid yyyy-mm-dd before
+ * a Deadline is ever constructed from user input, so byDate below is only
+ * ever null when a Deadline is built directly (e.g. from stored data) with
+ * text that doesn't parse as a date.
  */
 public class Deadline extends Task {
     private static final DateTimeFormatter OUTPUT_FORMAT = DateTimeFormatter.ofPattern("MMM d yyyy");

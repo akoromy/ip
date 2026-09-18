@@ -48,6 +48,30 @@ public class ParserTest {
     }
 
     @Test
+    public void parseDeadline_dateNotOnCalendar_exceptionThrown() {
+        // Month 56 and day 45 don't exist on any calendar, so this must be
+        // rejected rather than silently stored as raw text.
+        assertThrows(WaddlesException.class,
+                () -> Parser.parseDeadline("deadline submit ths /by 2029-56/45"));
+    }
+
+    @Test
+    public void parseDeadline_slashSeparatedDate_exceptionThrown() {
+        // Only yyyy-mm-dd (dash-separated) is accepted; yyyy/mm/dd must be
+        // rejected instead of falling back to raw, unparsed text.
+        assertThrows(WaddlesException.class,
+                () -> Parser.parseDeadline("deadline testing afain /by 2029/09/09"));
+    }
+
+    @Test
+    public void parseDeadline_validYyyyMmDdDate_stillAccepted() throws WaddlesException {
+        Task task = Parser.parseDeadline("deadline do this /by 2027-09-09");
+
+        assertTrue(task instanceof Deadline);
+        assertEquals("2027-09-09", ((Deadline) task).getBy());
+    }
+
+    @Test
     public void parseSchedule_validDate_returnsThatDate() throws WaddlesException {
         LocalDate date = Parser.parseSchedule("schedule 2024-12-01");
         assertEquals(LocalDate.of(2024, 12, 1), date);
@@ -97,6 +121,12 @@ public class ParserTest {
         assertTrue(task instanceof Event);
         assertTrue(task.isRecurring());
         assertEquals(Recurrence.DAILY, ((Event) task).getRecurrence());
+    }
+
+    @Test
+    public void parseEvent_slashSeparatedDate_exceptionThrown() {
+        assertThrows(WaddlesException.class,
+                () -> Parser.parseEvent("event standup /from 2024/01/01 /to 2024-01-02"));
     }
 
     @Test
