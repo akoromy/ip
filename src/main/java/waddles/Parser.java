@@ -182,13 +182,16 @@ public class Parser {
 
         Event event = new Event(description, from, to);
         if (recurrence != Recurrence.NONE) {
+            // setRecurrence() backfills a structured (date-only) fromDate/toDate
+            // when /from or /to included a time, since recurrence needs one to
+            // advance by; the hasStructuredDate() check below must come after.
+            event.setRecurrence(recurrence);
             if (!event.hasStructuredDate()) {
                 throw new WaddlesException(
                         WaddlesException.ERROR_PREFIX
                                 + " Oink! A recurring event needs both dates in yyyy-mm-dd format, "
                                 + "e.g. event standup /from 2024-12-01 /to 2024-12-01 /every day");
             }
-            event.setRecurrence(recurrence);
         }
         return event;
     }

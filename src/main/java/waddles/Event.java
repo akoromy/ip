@@ -6,11 +6,13 @@ import java.time.format.DateTimeParseException;
 
 /**
  * Represents an event task that occurs over a time span, from a start
- * point to an end point. {@link Parser} rejects any /from or /to date
- * that isn't valid yyyy-mm-dd before an Event is ever constructed from
- * user input, so fromDate/toDate below are only ever null when an Event
- * is built directly (e.g. from stored data) with text that doesn't parse
- * as a date.
+ * point to an end point. {@link Parser} rejects any /from or /to that
+ * isn't valid yyyy-mm-dd, optionally followed by an HHmm time, before an
+ * Event is ever constructed from user input. fromDate/toDate capture just
+ * the date portion (recurrence and schedule matching are date-only); when
+ * /from or /to includes a time, they stay null until — and unless — the
+ * event becomes recurring, since only recurrence actually needs a
+ * structured date to advance by (see {@link #setRecurrence}).
  */
 public class Event extends Task {
     private static final DateTimeFormatter OUTPUT_FORMAT = DateTimeFormatter.ofPattern("MMM d yyyy");
@@ -42,10 +44,14 @@ public class Event extends Task {
     }
 
     /**
-     * Attempts to parse the given text as a date in yyyy-mm-dd format.
+     * Attempts to parse the given text as a bare date in yyyy-mm-dd format.
+     * Text with a trailing time (e.g. "2026-09-19 1000") is deliberately
+     * NOT understood here, so that a plain, non-recurring event with a
+     * time keeps displaying that time as-is (see class doc) rather than
+     * being silently normalised down to just its date.
      *
      * @param text The text to parse.
-     * @return The parsed date, or null if the text is not a valid date.
+     * @return The parsed date, or null if the text is not a bare valid date.
      */
     private static LocalDate parseDate(String text) {
         try {
@@ -53,6 +59,22 @@ public class Event extends Task {
         } catch (DateTimeParseException e) {
             return null;
         }
+    }
+
+    /**
+     * Parses the date portion of the given text, ignoring any trailing
+     * " HHmm" time component (e.g. "2026-09-19 1000" is read as the date
+     * 2026-09-19). Used only once an event becomes recurring, since
+     * recurrence advances by whole days/weeks/months and has no use for
+     * time-of-day.
+     *
+     * @param text The text to parse.
+     * @return The parsed date, or null if the date portion isn't valid.
+     */
+    private static LocalDate parseDateIgnoringTime(String text) {
+        int spaceIndex = text.indexOf(' ');
+        String datePart = spaceIndex >= 0 ? text.substring(0, spaceIndex) : text;
+        return parseDate(datePart);
     }
 
     public String getFrom() {
@@ -75,12 +97,24 @@ public class Event extends Task {
     }
 
     /**
-     * Sets how often this event repeats.
+     * Sets how often this event repeats. If either date wasn't already
+     * understood as a bare yyyy-mm-dd date (e.g. because it included a
+     * time, like "2026-09-19 1000"), and a real recurrence is being set,
+     * its date portion is parsed now — recurrence needs a structured date
+     * to advance by, even though a one-off event with a time doesn't.
      *
      * @param recurrence The recurrence period; use {@link Recurrence#NONE} for a one-off event.
      */
     public void setRecurrence(Recurrence recurrence) {
         this.recurrence = recurrence;
+        if (recurrence != Recurrence.NONE) {
+            if (fromDate == null) {
+                fromDate = parseDateIgnoringTime(from);
+            }
+            if (toDate == null) {
+                toDate = parseDateIgnoringTime(to);
+            }
+        }
     }
 
     public Recurrence getRecurrence() {

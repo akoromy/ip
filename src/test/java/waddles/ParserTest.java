@@ -208,6 +208,69 @@ public class ParserTest {
     }
 
     @Test
+    public void parseEvent_recurringWithTime_accepted() throws WaddlesException {
+        // Confirmed bug: a recurring event with a time was wrongly rejected
+        // even though the exact same /from and /to are valid for a
+        // non-recurring event. Recurring events must accept time too.
+        Task task = Parser.parseEvent(
+                "event Weekly sync /from 2026-09-19 1000 /to 2026-09-19 1100 /every week");
+
+        assertTrue(task instanceof Event);
+        assertTrue(task.isRecurring());
+        Event event = (Event) task;
+        assertEquals("2026-09-19 1000", event.getFrom());
+        assertEquals("2026-09-19 1100", event.getTo());
+        assertTrue(event.hasStructuredDate());
+    }
+
+    @Test
+    public void parseEvent_recurringWithBareDate_stillAccepted() throws WaddlesException {
+        // Bare-date recurring events (no time) must keep working exactly
+        // as before this fix.
+        Task task = Parser.parseEvent("event Weekly sync /from 2026-09-19 /to 2026-09-19 /every week");
+
+        assertTrue(task instanceof Event);
+        assertTrue(task.isRecurring());
+    }
+
+    @Test
+    public void parseEvent_recurringWithWrongSeparatorAndTime_exceptionThrown() {
+        // Consistency, not looser validation: a wrong date separator must
+        // still be rejected for recurring events with a time.
+        assertThrows(WaddlesException.class,
+                () -> Parser.parseEvent(
+                        "event Weekly sync /from 2026/09/19 1000 /to 2026-09-19 1100 /every week"));
+    }
+
+    @Test
+    public void parseEvent_recurringWithInvalidCalendarDateAndTime_exceptionThrown() {
+        assertThrows(WaddlesException.class,
+                () -> Parser.parseEvent(
+                        "event Weekly sync /from 2026-99-19 1000 /to 2026-09-19 1100 /every week"));
+    }
+
+    @Test
+    public void parseEvent_nonRecurringWithTime_unaffectedByRecurrenceFix() throws WaddlesException {
+        // A non-recurring event with a time must display the raw text
+        // exactly as before — only recurring events get a backfilled,
+        // structured (date-only) fromDate/toDate.
+        Task task = Parser.parseEvent("event smth /from 2026-09-09 1800 /to 2026-09-09 1900");
+
+        assertTrue(task instanceof Event);
+        Event event = (Event) task;
+        assertEquals(false, event.hasStructuredDate());
+        assertEquals("[E][ ] smth (from: 2026-09-09 1800 to: 2026-09-09 1900)", event.toString());
+    }
+
+    @Test
+    public void parseDeadline_recurringWithTime_exceptionThrown() {
+        // Unlike events, deadlines are intentionally date-only (no /every
+        // needed to trigger this — a time is rejected either way).
+        assertThrows(WaddlesException.class,
+                () -> Parser.parseDeadline("deadline pay rent /by 2026-09-19 1000 /every week"));
+    }
+
+    @Test
     public void parseTaskIndex_validNumber_returnsZeroIndexedValue() throws WaddlesException {
         int index = Parser.parseTaskIndex("mark 2", "mark", 5);
         assertEquals(1, index);
