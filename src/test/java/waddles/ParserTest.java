@@ -162,6 +162,28 @@ public class ParserTest {
     }
 
     @Test
+    public void parseEvent_toBeforeFrom_exceptionThrown() {
+        assertThrows(WaddlesException.class,
+                () -> Parser.parseEvent("event X /from 2026-09-09 1800 /to 2026-09-09 1700"));
+    }
+
+    @Test
+    public void parseEvent_toEqualsFrom_accepted() throws WaddlesException {
+        // Ending exactly when it begins is allowed; only ending strictly
+        // before the start is rejected.
+        Task task = Parser.parseEvent("event X /from 2026-09-09 1800 /to 2026-09-09 1800");
+
+        assertTrue(task instanceof Event);
+    }
+
+    @Test
+    public void parseEvent_toAfterFrom_stillAccepted() throws WaddlesException {
+        Task task = Parser.parseEvent("event X /from 2026-09-09 1800 /to 2026-09-09 1900");
+
+        assertTrue(task instanceof Event);
+    }
+
+    @Test
     public void parseEvent_recurringWithoutStructuredDates_exceptionThrown() {
         assertThrows(WaddlesException.class,
                 () -> Parser.parseEvent("event standup /from Mon /to Tue /every day"));

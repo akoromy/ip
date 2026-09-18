@@ -1,10 +1,12 @@
 package waddles;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+import java.time.temporal.ChronoField;
 
 /**
  * Deals with making sense of the user's raw command input.
@@ -19,8 +21,10 @@ public class Parser {
      * Accepts yyyy-mm-dd, optionally followed by a space and a 24-hour
      * HHmm time (e.g. "2026-09-09" or "2026-09-09 1800"). Event's fields
      * are plain LocalDate (see Event.java), so the time — when present —
-     * is only validated here; it isn't retained in the structured date
-     * used for recurrence/schedule matching.
+     * is only validated and compared here; it isn't retained in the
+     * structured date used for recurrence/schedule matching. A missing
+     * time defaults to midnight, purely so /from and /to can be compared
+     * against each other regardless of whether either supplied a time.
      */
     private static final DateTimeFormatter EVENT_DATE_TIME_FORMAT = new DateTimeFormatterBuilder()
             .append(DateTimeFormatter.ISO_LOCAL_DATE)
@@ -28,6 +32,8 @@ public class Parser {
             .appendLiteral(' ')
             .appendPattern("HHmm")
             .optionalEnd()
+            .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+            .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
             .toFormatter()
             .withResolverStyle(ResolverStyle.STRICT);
 
@@ -137,8 +143,8 @@ public class Parser {
      * @param input The full line of user input.
      * @return The parsed Event task.
      * @throws WaddlesException If the description, /from, or /to is missing,
-     *     or /from or /to isn't a valid yyyy-mm-dd date (optionally followed
-     *     by an HHmm time).
+     *     /from or /to isn't a valid yyyy-mm-dd date (optionally followed
+     *     by an HHmm time), or /to is before /from.
      */
     public static Task parseEvent(String input) throws WaddlesException {
         String rest = input.length() > EVENT_PREFIX_LENGTH ? input.substring(EVENT_PREFIX_LENGTH).trim() : "";
@@ -168,6 +174,11 @@ public class Parser {
         }
         requireValidDateTime(from, "event meeting /from 2024-12-01 /to 2024-12-02");
         requireValidDateTime(to, "event meeting /from 2024-12-01 /to 2024-12-02");
+        if (parseEventDateTime(to).isBefore(parseEventDateTime(from))) {
+            throw new WaddlesException(
+                    WaddlesException.ERROR_PREFIX + " Oink! An event can't end before it starts — /to must be "
+                            + "on or after /from, e.g. event meeting /from 2024-12-01 1400 /to 2024-12-01 1500");
+        }
 
         Event event = new Event(description, from, to);
         if (recurrence != Recurrence.NONE) {
@@ -225,6 +236,19 @@ public class Parser {
                             + "dates must be given as yyyy-mm-dd, optionally followed by a 24-hour time "
                             + "(e.g. 2024-12-01 or 2024-12-01 1800), so try again, e.g. " + exampleCommand);
         }
+    }
+
+    /**
+     * Parses an already-validated Event /from or /to string into a
+     * LocalDateTime, defaulting to midnight when no HHmm time was given.
+     * Only meant to be called after {@link #requireValidDateTime} has
+     * already confirmed the text parses cleanly.
+     *
+     * @param text A date, optionally with an HHmm time, already known to be valid.
+     * @return The corresponding LocalDateTime.
+     */
+    private static LocalDateTime parseEventDateTime(String text) {
+        return LocalDateTime.from(EVENT_DATE_TIME_FORMAT.parse(text));
     }
 
     /**
