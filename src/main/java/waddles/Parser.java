@@ -1,7 +1,10 @@
 package waddles;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 
 /**
  * Deals with making sense of the user's raw command input.
@@ -11,6 +14,22 @@ public class Parser {
     private static final int DEADLINE_PREFIX_LENGTH = "deadline".length();
     private static final int EVENT_PREFIX_LENGTH = "event".length();
     private static final int FIND_PREFIX_LENGTH = "find".length();
+
+    /**
+     * Accepts yyyy-mm-dd, optionally followed by a space and a 24-hour
+     * HHmm time (e.g. "2026-09-09" or "2026-09-09 1800"). Event's fields
+     * are plain LocalDate (see Event.java), so the time — when present —
+     * is only validated here; it isn't retained in the structured date
+     * used for recurrence/schedule matching.
+     */
+    private static final DateTimeFormatter EVENT_DATE_TIME_FORMAT = new DateTimeFormatterBuilder()
+            .append(DateTimeFormatter.ISO_LOCAL_DATE)
+            .optionalStart()
+            .appendLiteral(' ')
+            .appendPattern("HHmm")
+            .optionalEnd()
+            .toFormatter()
+            .withResolverStyle(ResolverStyle.STRICT);
 
     /**
      * Extracts the command word (the first word) from the user's input.
@@ -118,7 +137,8 @@ public class Parser {
      * @param input The full line of user input.
      * @return The parsed Event task.
      * @throws WaddlesException If the description, /from, or /to is missing,
-     *     or /from or /to isn't a valid yyyy-mm-dd date.
+     *     or /from or /to isn't a valid yyyy-mm-dd date (optionally followed
+     *     by an HHmm time).
      */
     public static Task parseEvent(String input) throws WaddlesException {
         String rest = input.length() > EVENT_PREFIX_LENGTH ? input.substring(EVENT_PREFIX_LENGTH).trim() : "";
@@ -146,8 +166,8 @@ public class Parser {
                     WaddlesException.ERROR_PREFIX
                             + " Oink! An event needs a description, a /from time, and a /to time.");
         }
-        requireValidDate(from, "event meeting /from 2024-12-01 /to 2024-12-02");
-        requireValidDate(to, "event meeting /from 2024-12-01 /to 2024-12-02");
+        requireValidDateTime(from, "event meeting /from 2024-12-01 /to 2024-12-02");
+        requireValidDateTime(to, "event meeting /from 2024-12-01 /to 2024-12-02");
 
         Event event = new Event(description, from, to);
         if (recurrence != Recurrence.NONE) {
@@ -181,6 +201,29 @@ public class Parser {
                     WaddlesException.ERROR_PREFIX + " Oink! '" + text + "' isn't a date I recognise — "
                             + "dates must be given as yyyy-mm-dd (e.g. 2024-12-01), so try again, "
                             + "e.g. " + exampleCommand);
+        }
+    }
+
+    /**
+     * Checks that the given text is a real calendar date in yyyy-mm-dd
+     * format, optionally followed by a 24-hour HHmm time (e.g. "2026-09-09"
+     * or "2026-09-09 1800") — the format Event's /from and /to accept.
+     * Anything else, including a wrong date separator, an invalid calendar
+     * date, or a malformed time, is rejected here so it's never silently
+     * stored as raw, unparsed text.
+     *
+     * @param text The text the user supplied where a date (and optional time) was expected.
+     * @param exampleCommand A full example command shown in the error message.
+     * @throws WaddlesException If the text isn't a valid yyyy-mm-dd date with an optional HHmm time.
+     */
+    private static void requireValidDateTime(String text, String exampleCommand) throws WaddlesException {
+        try {
+            EVENT_DATE_TIME_FORMAT.parse(text);
+        } catch (DateTimeParseException e) {
+            throw new WaddlesException(
+                    WaddlesException.ERROR_PREFIX + " Oink! '" + text + "' isn't a date (and time) I recognise — "
+                            + "dates must be given as yyyy-mm-dd, optionally followed by a 24-hour time "
+                            + "(e.g. 2024-12-01 or 2024-12-01 1800), so try again, e.g. " + exampleCommand);
         }
     }
 

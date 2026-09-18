@@ -130,6 +130,38 @@ public class ParserTest {
     }
 
     @Test
+    public void parseEvent_validDateWithTime_accepted() throws WaddlesException {
+        // Event's /from and /to must accept an optional HHmm time, unlike
+        // Deadline's date-only /by.
+        Task task = Parser.parseEvent("event smth /from 2026-09-09 1800 /to 2026-09-09 1900");
+
+        assertTrue(task instanceof Event);
+        Event event = (Event) task;
+        assertEquals("2026-09-09 1800", event.getFrom());
+        assertEquals("2026-09-09 1900", event.getTo());
+    }
+
+    @Test
+    public void parseEvent_validDateWithoutTime_stillAccepted() throws WaddlesException {
+        // The HHmm time component is optional.
+        Task task = Parser.parseEvent("event smth /from 2026-09-09 /to 2026-09-10");
+
+        assertTrue(task instanceof Event);
+    }
+
+    @Test
+    public void parseEvent_slashSeparatedDateWithTime_exceptionThrown() {
+        assertThrows(WaddlesException.class,
+                () -> Parser.parseEvent("event smth /from 2026/09/09 1800 /to 2026/09/09 1900"));
+    }
+
+    @Test
+    public void parseEvent_dateWithTimeNotOnCalendar_exceptionThrown() {
+        assertThrows(WaddlesException.class,
+                () -> Parser.parseEvent("event smth /from 2026-99-99 1800 /to 2026-09-09 1900"));
+    }
+
+    @Test
     public void parseEvent_recurringWithoutStructuredDates_exceptionThrown() {
         assertThrows(WaddlesException.class,
                 () -> Parser.parseEvent("event standup /from Mon /to Tue /every day"));
