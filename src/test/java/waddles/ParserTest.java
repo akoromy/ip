@@ -184,6 +184,24 @@ public class ParserTest {
     }
 
     @Test
+    public void parseEvent_toEarlierYearThanFrom_exceptionThrownDespiteLaterTimeOfDay() {
+        // 2026-09-09 1900 is chronologically before 2027-09-09 1800, even
+        // though 1900 > 1800 when only the time-of-day is compared. The
+        // comparison must use the full date-time, not just the time.
+        assertThrows(WaddlesException.class,
+                () -> Parser.parseEvent("event X /from 2027-09-09 1800 /to 2026-09-09 1900"));
+    }
+
+    @Test
+    public void parseEvent_toLaterYearThanFrom_acceptedDespiteEarlierTimeOfDay() throws WaddlesException {
+        // 2027-09-09 1700 is chronologically after 2026-09-09 1800, even
+        // though 1700 < 1800 when only the time-of-day is compared.
+        Task task = Parser.parseEvent("event Y /from 2026-09-09 1800 /to 2027-09-09 1700");
+
+        assertTrue(task instanceof Event);
+    }
+
+    @Test
     public void parseEvent_recurringWithoutStructuredDates_exceptionThrown() {
         assertThrows(WaddlesException.class,
                 () -> Parser.parseEvent("event standup /from Mon /to Tue /every day"));
